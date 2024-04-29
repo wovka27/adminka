@@ -1,0 +1,28 @@
+@use './variables.scss' as *;
+
+// Перезаписываем стили Element-Plus
+.el-table__header {
+  th {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 136%;
+    color: $c_text;
+    padding: 20px 0 !important;
+  }
+}
+
+.el-table__cell {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  color: $c_text;
+
+  padding: 20px 0 !important;
+}
+
+// Используй этот класс на el-pagination
+.PskPaginator {
+  .el-input {
+    width: 160px !important;
+  }
+}

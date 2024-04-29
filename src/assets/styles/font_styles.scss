@@ -1,0 +1,62 @@
+@mixin setFontStyle0() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 80px;
+}
+
+@mixin setFontStyle1() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 22px;
+}
+
+@mixin setFontStyle2() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+@mixin setFontStyle3() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+@mixin setFontStyle4() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+@mixin setFontStyle5() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 32px;
+}
+
+@mixin setFontStyle6() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+@mixin setFontStyle7() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 22px;
+}
+
+@mixin setFontStyle8() {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 8px;
+}

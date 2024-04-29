@@ -1,0 +1,33 @@
+// ----------------- CUSTOM COLORS (start) -----------------
+// c_bg - color background
+//с приставки "c_" начинаются кастомные цвета
+
+$c_body: #fff;
+$c_bg: #f2f4f7;
+$c_body_saturated: #222b45;
+$c_body_disable: rgba(0, 0, 0, 0.5);
+$c_text: #212529;
+$c_icon: #79808a;
+$c_light: #818181;
+$c_border_light: #e4e7ed;
+
+// ------------------ CUSTOM COLORS (end) ------------------
+
+$shadow1: 0px 2px 4px rgba(0, 0, 0, 0.1); // Тень 1 применяется на кнопках и таблицах (первый уровень)
+
+// -------------- ELEMENT PLUS COLORS (start) --------------
+//эти цвета идут с Element Plus
+//в будущем их планируется перебить на свои
+$c_success: #67c23a;
+$c_danger: #f56c6c;
+$c_primary: #409eff;
+// --------------- ELEMENT PLUS COLORS (end) ---------------
+
+@mixin hideScroll() {
+  -ms-overflow-style: none; /* IE и Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
