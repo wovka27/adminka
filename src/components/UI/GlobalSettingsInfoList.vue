@@ -26,7 +26,7 @@ onMounted(() => {
     <PskAlert type="info" text="Эта квартира попадает под:" />
     <PskInfoCollapse
       v-if="global_settings_store.transformed_global_settings_list.GLOBAL?.length"
-      title="Глобальный отбор"
+      title="Автоматический отбор"
     >
       <div class="GlobalSettingsInfoList">
         <div

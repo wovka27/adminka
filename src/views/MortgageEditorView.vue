@@ -112,78 +112,75 @@ const is_public = ref(false)
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="MortgageEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
 
-      <div class="MortgageEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
-        <div style="grid-column: span 2" class="MortgageEditorView__wrap">
-          <h1 style="grid-column: span 2" class="MortgageEditorView__h1">Условия ипотеки</h1>
-          <div class="flex">
-            <PskTabSelect v-model="program_type" :options="['От банка', 'Субсидия']" />
-            <PskSwitch v-model="is_public" label="Публичная" />
-          </div>
-          <PskSelect
-            v-model="program"
-            label="Программа"
-            required
-            :options="refs.bank_programs"
-            options_value="value"
-            options_label="label"
-          />
-          <PskSelect v-model="bank" label="Банк" required :options="refs.banks" />
-          <PskInput
-            v-model="min_annual_fee"
-            label="Минимальный перв. взнос, %"
-            required
-            type="percent"
-            placeholder="Введите ПВ"
-          />
-          <PskInput v-model="base_rate" label="Базовая ставка, %" required type="number" placeholder="Введите ставку" />
-          <PskInput
-            v-if="program_type === 'Субсидия'"
-            v-model="subsidy_period"
-            label="Льготный период, мес."
-            type="number"
-            placeholder="Введите срок"
-          />
-          <PskInput
-            v-if="program_type === 'Субсидия'"
-            v-model="subsidized_rate"
-            label="Ставка льготного периода, %"
-            type="percent"
-            placeholder="Введите ставку"
-          />
-
-          <PskInputRange
-            v-model:max="max_mortgage_term"
-            v-model:min="min_mortgage_term"
-            type="number"
-            label="Срок ипотеки, мес."
-            required
-            placeholder_min="от 36"
-            placeholder_max="до 600"
-          />
-          <PskInputRange
-            v-model:max="max_amount"
-            v-model:min="min_amount"
-            type="cash"
-            label="Сумма кредита, ₽"
-            required
-            placeholder_min="от 100 000"
-            placeholder_max="до 100 000 000"
-          />
-
-          <PskInput
-            v-model="calc_program_id"
-            label="ID программы в калькуляторе"
-            type="number"
-            placeholder="Введите ID"
-          />
+      <PskInput v-model="name" label="Название" required placeholder="Введите название" class="span-2" />
+      <PskGridContainer grid-column-count="2" grid-span="2" title="Условия ипотеки">
+        <div class="flex">
+          <PskTabSelect v-model="program_type" :options="['От банка', 'Субсидия']" />
+          <PskSwitch v-model="is_public" label="Публичная" />
         </div>
-        <PskWYSIWYGEditor style="grid-column: span 3" v-model="description" label="Описание" />
-      </div>
-    </div>
+        <PskSelect
+          v-model="program"
+          label="Программа"
+          required
+          :options="refs.bank_programs"
+          options_value="value"
+          options_label="label"
+        />
+        <PskSelect v-model="bank" label="Банк" required :options="refs.banks" />
+        <PskInput
+          v-model="min_annual_fee"
+          label="Минимальный перв. взнос, %"
+          required
+          type="percent"
+          placeholder="Введите ПВ"
+        />
+        <PskInput v-model="base_rate" label="Базовая ставка, %" required type="number" placeholder="Введите ставку" />
+        <PskInput
+          v-if="program_type === 'Субсидия'"
+          v-model="subsidy_period"
+          label="Льготный период, мес."
+          type="number"
+          placeholder="Введите срок"
+        />
+        <PskInput
+          v-if="program_type === 'Субсидия'"
+          v-model="subsidized_rate"
+          label="Ставка льготного периода, %"
+          type="percent"
+          placeholder="Введите ставку"
+        />
+
+        <PskInputRange
+          v-model:max="max_mortgage_term"
+          v-model:min="min_mortgage_term"
+          type="number"
+          label="Срок ипотеки, мес."
+          required
+          placeholder_min="от 36"
+          placeholder_max="до 600"
+        />
+        <PskInputRange
+          v-model:max="max_amount"
+          v-model:min="min_amount"
+          type="cash"
+          label="Сумма кредита, ₽"
+          required
+          placeholder_min="от 100 000"
+          placeholder_max="до 100 000 000"
+        />
+
+        <PskInput
+          v-model="calc_program_id"
+          label="ID программы в калькуляторе"
+          type="number"
+          placeholder="Введите ID"
+        />
+      </PskGridContainer>
+      <PskWYSIWYGEditor v-model="description" label="Описание" />
+    </PskGridContainer>
   </FormLayout>
 </template>
 

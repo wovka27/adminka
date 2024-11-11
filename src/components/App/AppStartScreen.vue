@@ -58,7 +58,7 @@ watch(
   top: 5px;
   right: 5px;
   color: #1a1a1a;
-  font-size: 10px;
+  font-size: 1vmin;
 }
 
 .AppStartScreen_hidden {
@@ -68,7 +68,9 @@ watch(
 
 .AppStartScreen__content {
   svg {
-    transform: scale(1.8);
+    //transform: scale(1.8);
+    height: auto;
+    width: 30vmin;
 
     rect {
       animation: rect 500ms ease-in-out;

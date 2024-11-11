@@ -10,7 +10,9 @@ interface IUnloadingParametersProps {
   replacement_room_count_type_field?: 'input'
   modelValue: {
     status: boolean
-    flat_type: string
+    force_load: boolean
+    override_global_price: boolean
+    // flat_type: string
     replacement_uid: string
     replacement_room_count: string
     cost: {
@@ -28,19 +30,25 @@ const refs = useRefs('real-property-types', 'real-property-square-types')
 </script>
 
 <template>
-  <div style="grid-column: span 3" class="ComplexEditorView__boxFields2 gridForm">
-    <h3 class="ComplexEditorView__boxFields2H1">Параметры выгрузки</h3>
-
+  <PskGridContainer grid-column-count="3" grid-span="3" title="Параметры выгрузки">
     <GlobalSettingsInfoList aggregator_type="avito" />
-
-    <div style="grid-column: span 3" class="gridForm">
+    <div class="UnloadingParameters">
+      <!-- <div class="UnloadingParameters__switches"> -->
       <PskSwitch
         :model-value="modelValue.status"
         @update:modelValue="$emit('update:modelValue', { ...modelValue, status: $event })"
         label="Статус выгрузки"
         required
       />
-      <PskSelect
+
+      <PskSwitch
+        :model-value="modelValue.force_load"
+        @update:modelValue="$emit('update:modelValue', { ...modelValue, force_load: $event })"
+        label="Принудительная выгрузка"
+      />
+      <!-- </div> -->
+
+      <!-- <PskSelect
         :model-value="modelValue.flat_type"
         @update:modelValue="$emit('update:modelValue', { ...modelValue, flat_type: $event })"
         label="В какой тип объекта недвижимости выгружать"
@@ -48,17 +56,20 @@ const refs = useRefs('real-property-types', 'real-property-square-types')
         options_label="label"
         options_value="value"
         required
-      />
+      /> -->
       <PskSelect
+        style="max-width: 500px"
         v-if="!replacement_room_count_type_field && replacement_room_count_options"
         :model-value="modelValue.replacement_room_count"
-        @update:modelValue="$emit('update:modelValue', { ...modelValue, replacement_room_count: $event + '' })"
+        @update:modelValue="$emit('update:modelValue', { ...modelValue, replacement_room_count: $event })"
         label="Подменное кол-во комнат"
         :options="replacement_room_count_options"
         options_label="label"
         options_value="value"
+        value_key="value"
       />
       <PskInput
+        style="max-width: max-content"
         v-if="replacement_room_count_type_field && replacement_room_count_type_field === 'input'"
         :model-value="modelValue.replacement_room_count + ''"
         @update:modelValue="$emit('update:modelValue', { ...modelValue, replacement_room_count: $event })"
@@ -67,15 +78,17 @@ const refs = useRefs('real-property-types', 'real-property-square-types')
         placeholder="Введите кол-во"
       />
     </div>
-    <PskAlert style="grid-column: span 3" type="gray" text="Выберите GUID для выгрузки" />
+    <PskAlert class="span-3" type="gray" text="Выберите GUID для выгрузки" />
     <FakeGuid
       :guid_fake="modelValue.replacement_uid"
       @update:guid_fake="$emit('update:modelValue', { ...modelValue, replacement_uid: $event })"
-      :guid_base="$router.currentRoute.value.params.uid as string"
+      :guid_base="`${$router.currentRoute.value.params.uid}`"
     />
     <PriceTypeField
       :model-value="modelValue.cost"
+      :override-price="modelValue.override_global_price"
       @update:modelValue="$emit('update:modelValue', { ...modelValue, cost: $event })"
+      @update:overridePrice="$emit('update:modelValue', { ...modelValue, override_global_price: $event })"
     />
     <div></div>
     <PskSelect
@@ -84,7 +97,13 @@ const refs = useRefs('real-property-types', 'real-property-square-types')
       label="Какой тип площади выгружать"
       :options="refs.real_property_square_types"
     />
-  </div>
+  </PskGridContainer>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.UnloadingParameters {
+  display: flex;
+  gap: 30px;
+  grid-column: span 3;
+}
+</style>

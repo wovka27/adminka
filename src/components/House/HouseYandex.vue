@@ -26,7 +26,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateHouseAggregatorYandex,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -71,9 +71,9 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
+    <PskGridContainer grid-column-count="3" grid-span="3">
       <PskAlert
-        style="grid-column: span 3"
+        class="span-3"
         type="info"
         text="Данная информация будет использоваться для вывода на Яндекс.Недвижимость"
       />
@@ -87,14 +87,9 @@ defineExpose({ getIsStateBeforeEqualAfter })
         <PskSwitch v-model="lift" label="Наличие лифта" />
         <PskSwitch v-model="rubbish_chute" label="Наличие мусоропровода" />
       </div>
-      <div
-        v-if="material_type_options?.length"
-        style="grid-column: span 3"
-        class="ComplexEditorView__boxFields2 gridForm"
-      >
-        <h3 class="ComplexEditorView__boxFields2H1">Галерея</h3>
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+      <PskGridContainer grid-span="3" grid-column-count="3" title="Галерея">
+        <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>

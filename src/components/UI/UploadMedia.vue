@@ -49,10 +49,7 @@ const handleOnRemove = async (media: IMedia) => {
     return
   }
 
-  const result = props.modelValue.map((i) => {
-    if (media.uid === i.uid) return { ...i, action: 'detach' }
-    return i
-  })
+  const result = props.modelValue.map((i) => (media.uid === i.uid ? { ...i, action: 'detach' } : i))
 
   emit('update:modelValue', result)
 }
@@ -94,6 +91,10 @@ const handleUpdatePagePer = () => {
   handleClickAddMedia()
 }
 
+const closeGallery = () => {
+  is_MediaGallery_open.value = false
+}
+
 const MediaGallery_setMediaList = async () => {
   if (!type_current.value.type) return
   MediaGallery_response_media_list.value = []
@@ -105,10 +106,7 @@ const MediaGallery_setMediaList = async () => {
   }
   const response = await fetchGetMaterialsByType(type_current.value.type, meta)
 
-  if (!response) {
-    is_MediaGallery_open.value = false
-    return
-  }
+  if (!response) return closeGallery()
 
   MediaGallery_page_per.value = response.meta.per_page
   MediaGallery_page_last.value = response.meta.last_page
@@ -128,12 +126,12 @@ const MediaGallery_handleClickImg = (media: IMediaGalleryList) => {
       })
 
       emit('update:modelValue', result)
-      is_MediaGallery_open.value = false
+      closeGallery()
       return
     }
 
     emit('update:modelValue', [...props.modelValue, { ...media, action: 'attach' }])
-    is_MediaGallery_open.value = false
+    closeGallery()
 
     return
   }
@@ -165,7 +163,7 @@ const MediaGallery_handleClickImg = (media: IMediaGalleryList) => {
 
 const apply = () => {
   emit('update:modelValue', model.value)
-  is_MediaGallery_open.value = false
+  closeGallery()
 }
 
 const handleChangeFileInput = async (event: Event) => {
@@ -199,7 +197,7 @@ const handleChangeFileInput = async (event: Event) => {
     model.value = [...props.modelValue, { ...response_material, action: 'attach' }]
 
     if (!type_current.value.is_multiple) {
-      is_MediaGallery_open.value = false
+      apply()
       break
     }
   }
@@ -216,7 +214,7 @@ onUpdated(() => {
 </script>
 
 <template>
-  <div class="UploadMedia" v-if="types.length">
+  <div class="UploadMedia span-3" v-if="types.length">
     <PskTabSelect :options="types" v-model="type_current" options_label="name" />
 
     <div class="UploadMedia__imgBoxList">
@@ -386,7 +384,7 @@ onUpdated(() => {
 .MediaGallery__mediaBox {
   padding-right: 10px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
 

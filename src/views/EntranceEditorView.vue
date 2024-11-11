@@ -80,42 +80,21 @@ const construction_material = ref('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="EntranceEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
 
-      <div class="EntranceEditorView__boxFields1 gridForm">
-        <PskInput v-model="name" style="grid-column: span 2" label="Название" disabled required />
-        <div style="grid-column: span 2" class="gridForm">
-          <PskInput v-model="section" label="Секция" placeholder="Введите номер" type="number" />
-          <PskInput v-model="entrance" label="Подъезд" placeholder="Введите номер" type="number" />
-        </div>
-      </div>
+      <PskGridContainer grid-span="2" grid-column-count="3">
+        <PskInput v-model="name" label="Название" disabled required class="span-3" />
+        <PskInput v-model="section" label="Секция" placeholder="Введите номер" type="number" />
+        <PskInput v-model="entrance" label="Подъезд" placeholder="Введите номер" type="number" />
+      </PskGridContainer>
 
-      <div class="EntranceEditorView__boxFields2 gridForm">
-        <h3 class="EntranceEditorView__boxFields2H1">Об объекте</h3>
+      <PskGridContainer grid-column-count="3" grid-span="3" title="Об объекте">
         <PskInput v-model="floors" label="Этажность" disabled />
         <PskInput v-model="flat_count" label="Кол-во квартир на этаже" disabled />
         <PskSelect v-model="construction_material" :options="refs.construction_materials" label="Материал стен" />
-
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+        <UploadMedia v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.EntranceEditorView {
-  height: 100%;
-}
-
-.EntranceEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.EntranceEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-</style>

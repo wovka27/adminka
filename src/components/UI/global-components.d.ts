@@ -6,6 +6,7 @@ import PskCheckList from '@/components/UI/PskCheckList.vue'
 import PskDate from '@/components/UI/PskDate.vue'
 import PskDrawer from '@/components/UI/PskDrawer.vue'
 import PskField from '@/components/UI/PskField.vue'
+import PskGridContainer from '@/components/UI/PskGridContainer.vue'
 import PskInfoCollapse from '@/components/UI/PskInfoCollapse.vue'
 import PskInput from '@/components/UI/PskInput.vue'
 import PskInputRange from '@/components/UI/PskInputRange.vue'
@@ -50,5 +51,6 @@ declare module '@vue/runtime-core' {
     CollapseHOC: typeof CollapseHOC
     PskInfoCollapse: typeof PskInfoCollapse
     PskTableTdName: typeof PskTableTdName
+    PskGridContainer: typeof PskGridContainer
   }
 }

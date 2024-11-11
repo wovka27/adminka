@@ -38,7 +38,7 @@ const { apply, is_data_loaded, default_fields } = useEditorView({
     complex_uid.value = form_data.complex_uid || ''
     anchor_link.value = form_data.anchor_link || ''
     description.value = form_data.description || ''
-    form.value = Object.entries(form_data.form).reduce(
+    form.value = Object.entries(form_data.form ?? getDefaultValuesFormFields()).reduce(
       (acc, [key, val]) => ({
         ...acc,
         [key]: val || form.value[key as keyof typeof form.value]
@@ -111,64 +111,30 @@ const show_form = ref(false)
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="PromotionCategoryEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
 
-      <div class="PromotionCategoryEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
-        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px">
-          <PskSelect
-            style="grid-column: span 2"
-            v-model="complex_uid"
-            label="Жилой комплекс"
-            options_label="label"
-            options_value="value"
-            required
-            :options="refs.complexes"
-          />
-          <PskInput v-model="anchor_link" label="якорная ссылка" required placeholder="Введите название" />
-        </div>
-      </div>
-      <div class="PromotionCategoryEditorView__boxFields2 gridForm">
-        <PskSwitch style="grid-column: span 3" label="Показывать форму?" v-model="show_form" />
-        <div v-if="show_form" style="grid-column: span 2" class="gridForm">
-          <PskInput style="grid-column: span 3" v-model="form.button_label" label="Текст кнопки в блоке promotion" />
-          <PskInput style="grid-column: span 3" v-model="form.header_text" label="Заголовок формы" />
-          <PskInput type="textarea" style="grid-column: span 3" v-model="form.content_text" label="Текст в форме" />
-          <PskInput style="grid-column: span 3" v-model="form.button_text" label="Текст кнопки в форме" />
-        </div>
-      </div>
+      <PskInput v-model="name" label="Название" required placeholder="Введите название" class="span-2" />
+      <PskGridContainer grid-column-count="3" grid-span="2">
+        <PskSelect
+          v-model="complex_uid"
+          label="Жилой комплекс"
+          options_label="label"
+          options_value="value"
+          required
+          :options="refs.complexes"
+          class="span-2"
+        />
+        <PskInput v-model="anchor_link" label="якорная ссылка" required placeholder="Введите название" />
+      </PskGridContainer>
+      <PskSwitch class="span-3" label="Показывать форму?" v-model="show_form" />
+      <PskGridContainer v-if="show_form" grid-span="2" grid-column-count="1">
+        <PskInput v-model="form.button_label" label="Текст кнопки в блоке promotion" />
+        <PskInput v-model="form.header_text" label="Заголовок формы" />
+        <PskInput v-model="form.content_text" label="Текст в форме" type="textarea" />
+        <PskInput v-model="form.button_text" label="Текст кнопки в форме" />
+      </PskGridContainer>
       <PskWYSIWYGEditor label="Описание" v-model="description" />
-    </div>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.PromotionCategoryEditorView {
-  height: 100%;
-}
-
-.PromotionCategoryEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.PromotionCategoryEditorView__boxFields2 {
-  margin: 20px 0;
-}
-
-.FlatEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.PromotionCategoryEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.PromotionCategoryEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

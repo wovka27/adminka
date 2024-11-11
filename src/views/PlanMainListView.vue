@@ -32,7 +32,7 @@ const { setList, data_list, meta, handleChangeFilter, sort } = useListView<IPlan
 
 <template>
   <div class="PlanMainListView ListView">
-    <FilterComplex @complexSelectedChange="handleChangeFilter" />
+    <FilterComplex @selectedChange="handleChangeFilter" />
 
     <PskTable :data="data_list" v-model:meta="meta" @update:meta="setList" v-model:sort="sort">
       <el-table-column label="Название" sortable prop="name" width="300px">

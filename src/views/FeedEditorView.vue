@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { Warning } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
+import PskLink from '@/components/UI/PskLink.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 
-import { type IFeed, fetchCreateFeed, fetchGetFeed, fetchUpdateFeed } from '@/services/REST/dom_admin/feed'
+import {
+  type IFeed,
+  type IForcedFlats,
+  fetchCreateFeed,
+  fetchGetFeed,
+  fetchGetForcedFlatsFeed,
+  fetchUpdateFeed
+} from '@/services/REST/dom_admin/feed'
 
 import copyText from '@/utils/copyText'
 
@@ -30,6 +38,7 @@ const refs = useRefs(
 const { apply, is_data_loaded, default_fields } = useEditorView({
   router,
   fetchGetEntity: fetchGetFeed,
+
   back_route_name: 'feed_list',
   default_fields: true,
   apply: {
@@ -72,6 +81,15 @@ const { apply, is_data_loaded, default_fields } = useEditorView({
       }
     },
     common: {
+      fn: async () => {
+        if (router.currentRoute.value.params.uid === 'create') return
+
+        const data = await fetchGetForcedFlatsFeed(router.currentRoute.value.params.uid as string)
+
+        if (data) {
+          forced_flats_list.value = data
+        }
+      },
       app_header_props: ([response_feed]) => ({
         title: response_feed.name,
         breadcrumbs: [
@@ -103,40 +121,44 @@ const houses = ref([])
 const file_url = ref('')
 const type = ref('')
 
+const forced_flats_list = ref<IForcedFlats>({
+  override_global_price_flats: [],
+  force_load_flats: []
+})
+
 const alertText: Record<IFeed['settings_type'], string> = {
   PERSONAL:
     'Для этого фида параметры выгрузки квартир управляются в Квартирах полями: "Статус выгрузки", "Какой тип цены выгружать", "Какой тип площади выгружать"',
-  GLOBAL: 'Для этого фида игнорируются принудительные настройки выгрузки. Выборка производится по глобальной настройке'
+  GLOBAL:
+    'Для этого фида игнорируются принудительные настройки выгрузки. Выборка производится по автоматической настройке'
 }
 
 const feed_type_list = [
   { value: 'cian', label: 'Циан' },
   { value: 'avito', label: 'Авито' },
   { value: 'yandex', label: 'Яндекс.Недвижимость' },
+  { value: 'm2', label: 'M2' },
   { value: 'dom_click', label: 'ДомКлик' }
 ]
 </script>
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="FeedEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
 
-      <div class="FeedEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
-        <PskSelect
-          label="Тип фида"
-          v-model="type"
-          :options="feed_type_list"
-          required
-          options_label="label"
-          options_value="value"
-          :disabled="$route.params.uid !== 'create'"
-        />
-      </div>
+      <PskInput v-model="name" label="Название" required placeholder="Введите название" class="span-2" />
+      <PskSelect
+        label="Тип фида"
+        v-model="type"
+        :options="feed_type_list"
+        required
+        options_label="label"
+        options_value="value"
+        :disabled="$route.params.uid !== 'create'"
+      />
 
-      <div class="FeedEditorView__boxFields2">
-        <h3 class="FeedEditorView__boxFields2H1">Настройки</h3>
+      <PskGridContainer grid-column-count="2" grid-span="3" title="Настройки">
         <PskSelect
           v-model="settings_type"
           :options="refs.feed_settings_type"
@@ -209,6 +231,17 @@ const feed_type_list = [
           multiple
           :options="refs.complexes_with_houses"
         />
+        <FeedCollapseTable
+          title="Список квартир с выгружаемой ценой"
+          :data_list="forced_flats_list.override_global_price_flats"
+          name_key="override_global_price"
+        />
+        <FeedCollapseTable
+          title="Список принудительно загруженных квартир"
+          :data_list="forced_flats_list.force_load_flats"
+          name_key="force_load"
+        />
+
         <PskInput v-if="file_url" v-model="file_url" style="grid-column: span 2" label="Ссылка на фид" disabled>
           <div @click="copyText(file_url)" style="cursor: pointer" title="Скопировать ссылку">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -219,40 +252,7 @@ const feed_type_list = [
             </svg>
           </div>
         </PskInput>
-      </div>
-    </div>
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.FeedEditorView {
-  height: 100%;
-}
-
-.FeedEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.FeedEditorView__boxFields2 {
-  display: grid;
-  align-items: end;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px 30px;
-}
-
-.FeedEditorView__boxFields2H1 {
-  @include setFontStyle6();
-  grid-column: span 2;
-  margin: 50px 0 10px 0;
-}
-
-.FeedEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.FeedEditorView__h1 {
-  grid-column: span3;
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

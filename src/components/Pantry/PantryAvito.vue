@@ -21,7 +21,6 @@ const router = useRouter()
 const refs = useRefs(
   'real-property-types',
   'avito-categories',
-  'avito-property-statuses',
   'avito-operation-types',
   'avito-deal-types',
   'avito-market-types',
@@ -47,7 +46,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateEstateAggregatorAvito,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -61,8 +60,8 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
 
     property_category.value = form_data.data.property_category || ''
     nd_additionally.value = form_data.data.nd_additionally || []
-    operation_type.value = form_data.data.operation_type || ''
-    property_status.value = form_data.data.property_status || ''
+    operation_type.value = form_data.data.operation_type || []
+    property_status.value = form_data.data.property_status || []
     market_type.value = form_data.data.market_type || ''
     property_rights.value = form_data.data.property_rights || ''
     listing_fee.value = form_data.data.listing_fee || ''
@@ -75,7 +74,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
     bathroom.value = form_data.data.bathroom || []
     room_type.value = form_data.data.room_type || []
   },
-  getRequestData: (): IEstateAggregatorAvito['data'] => ({
+  getRequestData: () => ({
     ...getRequestParameters(),
 
     property_category: property_category.value,
@@ -117,15 +116,10 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
-      <PskAlert
-        style="grid-column: span 3; margin-top: 10px"
-        type="info"
-        text="Данная информация будет использоваться для вывода на Авито"
-      />
+    <PskGridContainer grid-column-count="3" grid-span="3">
+      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Авито" />
       <UnloadingParameters v-model="unloading_parameters" />
-      <div style="grid-column: span 3" class="ComplexEditorView__boxFields2 gridForm">
-        <h3 class="ComplexEditorView__boxFields2H1">Общая информация</h3>
+      <PskGridContainer grid-span="3" grid-column-count="3" title="Общая информация">
         <PskSelect
           v-model="property_category"
           label="Категория объекта недвижимости"
@@ -147,9 +141,9 @@ defineExpose({ getIsStateBeforeEqualAfter })
         <div></div>
         <PskInput v-model="phone_number" label="Телефон в объявлении" placeholder="Введите номер" type="phone" />
         <PskSelect v-model="contact_method" label="Способ связи" :options="refs.avito_contact_methods" />
-      </div>
-      <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
       <PskWYSIWYGEditor label="Описание" v-model="description" />
-    </div>
+      <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+    </PskGridContainer>
   </FormLayout>
 </template>

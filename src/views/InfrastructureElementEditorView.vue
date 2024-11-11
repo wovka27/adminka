@@ -138,63 +138,29 @@ const taxi_cost = ref('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="InfrastructureElementEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
 
-      <div class="InfrastructureElementEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
+      <PskGridContainer grid-span="2" grid-column-count="1">
+        <PskInput v-model="name" label="Название" required placeholder="Введите название" />
         <PskCascader
-          style="grid-column: span 2"
           label="Категория"
           required
           v-model="inf_category_uid"
           :options="refs.complexes_with_infrastructure_categories"
         />
-        <PskMapField style="grid-column: span 2" v-model="map_mark" id="map" label="Метка на карте" required />
-      </div>
+        <PskMapField v-model="map_mark" id="map" label="Метка на карте" required />
+      </PskGridContainer>
 
-      <div class="InfrastructureElementEditorView__boxFields2 gridForm">
-        <h3 class="FlatEditorView__boxFields2H1">Время в пути</h3>
-
+      <PskGridContainer grid-span="3" grid-column-count="3" title="Время в пути">
         <PskInput v-model="car_time" label="Время на авто, мин" type="number" />
         <PskInput v-model="public_transport_time" label="Время на автобусе, мин" type="number" />
         <PskInput v-model="scooter_time" label="Время на самокате, мин" type="number" />
         <PskInput v-model="cycling_time" label="Время на велосипеде, мин" type="number" />
         <PskInput v-model="walking_time" label="Время пешком, мин" type="number" />
         <PskInput v-model="taxi_cost" label="Стоимость такси, ₽" type="cash" />
-      </div>
-
-      <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-    </div>
+        <UploadMedia v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.InfrastructureElementEditorView {
-  height: 100%;
-}
-
-.InfrastructureElementEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.InfrastructureElementEditorView__boxFields2 {
-  margin: 0 0 40px 0;
-}
-
-.FlatEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.InfrastructureElementEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.InfrastructureElementEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

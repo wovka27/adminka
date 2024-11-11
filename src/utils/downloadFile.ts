@@ -1,68 +1,43 @@
-import RestApi from '@/services/REST/utils/RestApi'
+import api from '@/services/REST/utils/dom_admin'
 
-import { BASE_URL } from '@/utils/initRestApiConfig'
 import { message } from '@/utils/message'
 import { notification } from '@/utils/notification'
 
 export const downloadFile = async (request_data: any, loaded: any) => {
-  if (!Object.keys(request_data).includes('complex')) return message('Не выбран ЖК', 'error')
-
-  const t = localStorage.getItem('dom_admin_token')
-
-  if (!t) return
-
-  const token = 'Bearer ' + t
-  const params = RestApi.queryStringify({ f: request_data })
-  const uri = `${BASE_URL}admin/objects/flats/export${params ? `?${params}` : ''}`
-
-  message('Скачивание файла', 'info')
-
-  try {
-    const response = await fetch(uri, { headers: { Authorization: token } })
-
-    if (!response || !response.body || response.status === 500) return message('Ошибка при скачивании файла', 'error')
-
-    const contentLength = response.headers.get('content-length') || ''
-    const total = parseInt(contentLength, 10)
-
-    const onProgress = (chunk?: Uint8Array) => {
-      if (!chunk?.length) {
-        loaded.val = 0
-        return
+  const response = await api.get<Response>(
+    'admin/objects/flats/export',
+    { f: request_data },
+    {
+      onProgress: (percent, response) => {
+        loaded.val = percent
+      },
+      cbPreFetch: () => {
+        message('Скачивание файла', 'info')
+      },
+      cbPostFetch: () => {},
+      cbHandlerErrorResponse: (errors) => {
+        message('Ошибка при скачивании файла', 'error')
       }
-      loaded.val += Math.round((chunk.length / total) * 100)
     }
+  )
 
-    const transformStream = new TransformStream({
-      transform(chunk, controller) {
-        onProgress(chunk)
-        controller.enqueue(chunk)
-      }
-    })
+  if (!response) return
 
-    response.body.pipeThrough(transformStream)
+  const url = URL.createObjectURL(await response.blob())
 
-    const newResponse = new Response(transformStream.readable)
+  const filename = decodeURIComponent(response.headers.get('filename') ?? '').replace(/\+/g, ' ')
 
-    const url = URL.createObjectURL(await newResponse.blob())
+  saveFile(url, filename)
 
-    const filename = decodeURIComponent(response.headers.get('filename') ?? '').replace(/\+/g, ' ')
-
-    saveFile(url, filename)
-
-    onProgress()
-
-    URL.revokeObjectURL(url)
-    notification({
-      title: 'Успешно',
-      duration: 3000,
-      message: `Файл ${filename} скачан`,
-      type: 'success',
-      position: 'top-right'
-    })
-  } catch (e) {
-    message('Ошибка при скачивании файла', 'error')
-  }
+  URL.revokeObjectURL(url)
+  notification({
+    title: 'Успешно',
+    duration: 3000,
+    message: `Файл ${filename} скачан`,
+    type: 'success',
+    position: 'top-right'
+  })
+  loaded.val = 0
 }
 
 const saveFile = (url: string, filename: string) => {

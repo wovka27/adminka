@@ -18,6 +18,8 @@ import FeedEditorView from '@/views/FeedEditorView.vue'
 import FeedView from '@/views/FeedView.vue'
 import FlatEditorView from '@/views/FlatEditorView.vue'
 import FlatListView from '@/views/FlatListView.vue'
+import FlatPropsEditorView from '@/views/FlatPropsEditorView.vue'
+import FlatPropsListView from '@/views/FlatPropsListView.vue'
 import GroupCompanyEditorView from '@/views/GroupCompanyEditorView.vue'
 import GroupCompanyListView from '@/views/GroupCompanyListView.vue'
 import HouseEditorView from '@/views/HouseEditorView.vue'
@@ -115,6 +117,9 @@ const router = createRouter({
 
     { path: '/tags', component: TagsView, meta: { layout: 'default' }, name: 'tag_list' },
     { path: '/tags/:uid', component: TagsEditorView, meta: { layout: 'default' }, name: 'tag' },
+
+    { path: '/flat_properties', component: FlatPropsListView, meta: { layout: 'default' }, name: 'flat_properties_list' },
+    { path: '/flat_properties/:uid', component: FlatPropsEditorView, meta: { layout: 'default' }, name: 'flat_property' },
   ]
 })
 

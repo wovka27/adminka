@@ -20,18 +20,28 @@ export default (entity: string) => {
   }
 
   const getFilteredMaterials = (type: IMedia['action']): IMedia[] => materials.value.filter((i) => i.action === type)
-  const detach = async (entity_uid: string) => {
-    const filtered_materials = getFilteredMaterials('detach')
+
+  const processMaterial = async (type: 'detach' | 'attach', cb: (material_uid: string) => Promise<void>) => {
+    const filtered_materials = getFilteredMaterials(type)
     for (const filteredMaterial of filtered_materials) {
-      await fetchDetachMaterial(entity, entity_uid, filteredMaterial.uid)
+      await cb(filteredMaterial.uid)
     }
   }
+
+  const detach = async (entity_uid: string) => {
+    const cb = async (material_uid: string) => {
+      await fetchDetachMaterial(entity, entity_uid, material_uid)
+    }
+
+    await processMaterial('detach', cb)
+  }
   const attach = async (entity_uid: string) => {
-    const filtered_materials = getFilteredMaterials('attach')
-    for (const filteredMaterial of filtered_materials) {
-      await fetchAttachMaterial(entity, entity_uid, filteredMaterial.uid)
+    const cb = async (material_uid: string) => {
+      await fetchAttachMaterial(entity, entity_uid, material_uid)
       await sleep()
     }
+
+    await processMaterial('attach', cb)
   }
 
   const getRequestDataMaterials = () => ({ media: materials.value })

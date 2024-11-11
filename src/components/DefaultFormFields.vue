@@ -40,7 +40,7 @@ const model = Object.keys(props.modelValue).reduce((res: any, i: keyof ModelType
 </script>
 
 <template>
-  <div class="DefaultFormFields gridForm">
+  <PskGridContainer grid-span="3" grid-column-count="3">
     <div class="DefaultFormFields__row1">
       <div class="DefaultFormFields__show">
         <PskSwitch label="Активен" v-model="model.show.value" @update:modelValue="emit('changeShow')" />
@@ -105,7 +105,7 @@ const model = Object.keys(props.modelValue).reduce((res: any, i: keyof ModelType
       <PskDate placeholder="" v-model="model.created_at.value" label="Дата создания" use_time disabled />
       <PskDate placeholder="" v-model="model.updated_at.value" label="Дата обновления" use_time disabled />
     </div>
-  </div>
+  </PskGridContainer>
 </template>
 
 <style lang="scss">

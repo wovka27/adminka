@@ -11,6 +11,7 @@ export interface IPskSelectProps {
   placeholder?: string
   disabled?: boolean
   group?: boolean
+  collapse_tags?: boolean
   required?: boolean
   multiple?: boolean
   clearable?: boolean
@@ -46,7 +47,7 @@ const model = computed({
         v-model="model"
         :multiple="multiple"
         :disabled="disabled"
-        collapse-tags
+        :collapse-tags="!!collapse_tags"
         :placeholder="placeholder || 'Выберите'"
         :value-key="value_key"
         @change="emit('change', $event)"

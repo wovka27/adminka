@@ -192,7 +192,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="editor" class="PskWYSIWYGEditor">
+  <div v-if="editor" class="PskWYSIWYGEditor span-3">
     <header class="PskWYSIWYGEditor__header">
       <div class="PskWYSIWYGEditor__label" v-if="label" :required="!!required">{{ label }}</div>
       <div class="PskWYSIWYGEditor__headerSlot">

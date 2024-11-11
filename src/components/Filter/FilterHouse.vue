@@ -4,13 +4,13 @@ import { computed } from 'vue'
 import { useFiltersStore } from '@/stores'
 
 const filters_state = useFiltersStore()
-const emit = defineEmits(['houseSelectedChange'])
+const emit = defineEmits(['selectedChange'])
 
 const model = computed({
   get: () => filters_state.house_selected || filters_state.house_options[0],
   set: (house) => {
     filters_state.house_selected = filters_state.house_options.find((i) => i.name === house?.name)!
-    emit('houseSelectedChange')
+    emit('selectedChange')
   }
 })
 </script>

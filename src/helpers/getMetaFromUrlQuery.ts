@@ -1,17 +1,16 @@
-import { useRouter } from 'vue-router'
+import type { Router } from 'vue-router'
 
-export default (meta_default?: IMeta): IMeta => {
-  const router = useRouter()
+export default (router: Router, meta_default?: IMeta): IMeta => {
   const query = router.currentRoute.value.query
 
-  const getValueFromQuery = (key: string, defaultValue: number): number => {
+  const getValueFromQuery = (key: keyof IMeta, defaultValue: number = 1): number => {
     const value = query[key]
-    return value && !isNaN(+value) ? +value : meta_default ? meta_default[key as keyof IMeta] : defaultValue
+    return value && !isNaN(+value) ? +value : meta_default ? meta_default[key] : defaultValue
   }
 
-  const page_current = getValueFromQuery('page_current', 1)
-  const page_per = getValueFromQuery('page_per', 10)
-  const page_last = getValueFromQuery('page_last', 1)
-
-  return { page_current, page_per, page_last }
+  return {
+    page_current: getValueFromQuery('page_current'),
+    page_per: getValueFromQuery('page_per', 10),
+    page_last: getValueFromQuery('page_last')
+  }
 }

@@ -34,7 +34,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateEstateAggregatorDomClick,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -50,7 +50,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
     balcony.value = form_data.data.balcony || ''
     description.value = form_data.data.description || ''
   },
-  getRequestData: (): IEstateAggregatorDomClick['data'] => ({
+  getRequestData: () => ({
     ...getRequestParameters(),
 
     description: description.value,
@@ -60,28 +60,28 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
 })
 
 const description = ref<IEstateAggregatorDomClick['data']['description']>('')
-const bathroom = ref<IEstateAggregatorDomClick['data']['bathroom']>('bathroom')
-const balcony = ref<IEstateAggregatorDomClick['data']['balcony']>('balcony')
+const bathroom = ref<IEstateAggregatorDomClick['data']['bathroom']>('')
+const balcony = ref<IEstateAggregatorDomClick['data']['balcony']>('')
 
 defineExpose({ getIsStateBeforeEqualAfter })
 </script>
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
+    <PskGridContainer grid-span="3" grid-column-count="3">
       <PskAlert
-        style="grid-column: span 3; margin-top: 10px"
+        class="span-3"
+        style="margin-top: 10px"
         type="info"
         text="Данная информация будет использоваться для вывода на Авито"
       />
       <UnloadingParameters v-model="unloading_parameters" />
-      <div style="grid-column: span 3" class="ComplexEditorView__boxFields2 gridForm">
-        <h3 class="ComplexEditorView__boxFields2H1">Общая информация</h3>
+      <PskGridContainer grid-column-count="3" grid-span="3" title="Общая информация">
         <PskSelect v-model="bathroom" label="Санузел" :options="refs.dom_click_bathroom_types" />
         <PskSelect v-model="balcony" label="Наличие балкона" :options="refs.dom_click_balcony_types" />
-      </div>
-      <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
       <PskWYSIWYGEditor label="Описание" v-model="description" />
-    </div>
+      <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+    </PskGridContainer>
   </FormLayout>
 </template>

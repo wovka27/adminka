@@ -10,8 +10,9 @@ import DefaultFormFields from '@/components/DefaultFormFields.vue'
 import ParkingAvito from '@/components/Parking/ParkingAvito.vue'
 import ParkingCian from '@/components/Parking/ParkingCian.vue'
 import ParkingDomClick from '@/components/Parking/ParkingDomClick.vue'
+import ParkingM2 from '@/components/Parking/ParkingM2.vue'
 import ParkingYandex from '@/components/Parking/ParkingYandex.vue'
-import ProfitDomPrices from '@/components/ProfitDomPrices.vue'
+import ProfitDomPrices from '@/components/ProfitDomPrices/ProfitDomPrices.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
@@ -57,20 +58,19 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
     title_for_site.value = form_data.title_for_site || ''
     article.value = form_data.article || ''
     plan_type.value = form_data.plan_type || ''
-    rooms.value = form_data.rooms ? String(form_data.rooms) : ''
-    common_square.value = form_data.common_square ? String(form_data.common_square) : ''
-    living_space.value = form_data.living_space ? String(form_data.living_space) : ''
-    kitchen_square.value = form_data.kitchen_square ? String(form_data.kitchen_square) : ''
-    loggia_square.value = form_data.loggia_square ? String(form_data.loggia_square) : ''
-    ceiling_height.value = form_data.ceiling_height ? String(form_data.ceiling_height) : ''
-    floor.value = form_data.floor ? String(form_data.floor) : ''
-    number_on_floor.value = form_data.number_on_floor ? String(form_data.number_on_floor) : ''
+    rooms.value = getNumString(form_data.rooms)
+    common_square.value = getNumString(form_data.common_square)
+    living_space.value = getNumString(form_data.living_space)
+    kitchen_square.value = getNumString(form_data.kitchen_square)
+    loggia_square.value = getNumString(form_data.loggia_square)
+    ceiling_height.value = getNumString(form_data.ceiling_height)
+    floor.value = getNumString(form_data.floor)
+    number_on_floor.value = getNumString(form_data.number_on_floor)
     number.value = form_data.number || ''
     interior.value = form_data.interior || ''
     window_view.value = form_data.window_view || ''
     window_placement.value = form_data.window_placement || ''
     video_review.value = form_data.video_review || ''
-
     smart_prices.value = form_data.smart_prices || []
     prices.value = form_data.prices || []
     margin_group.value = form_data.margin_group || ''
@@ -125,19 +125,22 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
   }),
   mount: {
     common: {
-      app_header_props: ([response_parking]) => ({
-        title: `${response_parking.complex.name} / ${response_parking.house.name} / Паркинг №${response_parking.number}`,
-        breadcrumbs: [
-          { label: 'Объекты недвижимости' },
-          {
-            label: 'Паркинги',
-            route: getHandleBackArgs('parking_list')
-          },
-          {
-            label: `${response_parking.complex.name} / ${response_parking.house.name} / Паркинг №${response_parking.number}`
-          }
-        ]
-      }),
+      app_header_props: ([response_parking]) => {
+        const title = `${response_parking.complex.name} / ${response_parking.house.name} / Паркинг №${response_parking.number}`
+        return {
+          title,
+          breadcrumbs: [
+            { label: 'Объекты недвижимости' },
+            {
+              label: 'Паркинги',
+              route: getHandleBackArgs('parking_list')
+            },
+            {
+              label: title
+            }
+          ]
+        }
+      },
       fn: async ([response_flat]) => {
         aggregators_items = response_flat.aggregators_items?.length
           ? response_flat.aggregators_items.map(getAggregatorItem)
@@ -190,7 +193,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     ['avito_real_property', { ...aggregator, component: ParkingAvito }],
     ['cian_real_property', { ...aggregator, component: ParkingCian }],
     ['dom_click_real_property', { ...aggregator, component: ParkingDomClick }],
-    ['yandex_real_property', { ...aggregator, component: ParkingYandex }]
+    ['yandex_real_property', { ...aggregator, component: ParkingYandex }],
+    ['m2_real_property', { ...aggregator, component: ParkingM2 }]
   ])
   return result.get(aggregator.type)!
 }
@@ -204,24 +208,12 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     @pushCommonData="pushCommonData"
   >
     <FormLayout :apply="apply">
-      <div class="ParkingEditorView">
+      <PskGridContainer grid-column-count="3">
         <DefaultFormFields v-model="default_fields" is_show_dates />
-
-        <div class="ParkingEditorView__boxFields1 gridForm">
-          <PskInput v-model="name" style="grid-column: span 2" label="Название" disabled />
-          <PskInput v-model="status" label="Статус" disabled />
-
-          <PskInput
-            v-model="title_for_site"
-            style="grid-column: span 2"
-            label="Название для сайта"
-            placeholder="Введите название"
-          />
-        </div>
-
-        <div class="ParkingEditorView__boxFields2 gridForm">
-          <h3 class="ParkingEditorView__boxFields2H1">О квартире</h3>
-
+        <PskInput v-model="name" label="Название" disabled class="span-2" />
+        <PskInput v-model="status" label="Статус" disabled />
+        <PskInput v-model="title_for_site" label="Название для сайта" placeholder="Введите название" class="span-2" />
+        <PskGridContainer grid-column-count="3" grid-span="3" title="О квартире">
           <PskInput v-model="article" label="Артикул" disabled />
 
           <PskInput v-model="plan_type" label="Тип планировки" disabled>
@@ -302,21 +294,11 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             placeholder="Выберите положение окон"
             clearable
           />
-
-          <PskInput
-            v-model="video_review"
-            label="Видеообзор"
-            style="grid-column: span 3"
-            placeholder="Введите/вставьте ссылку"
-          />
-        </div>
-
+          <PskInput v-model="video_review" label="Видеообзор" placeholder="Введите/вставьте ссылку" class="span-3" />
+        </PskGridContainer>
         <UploadImg class="ParkingEditorView__UploadImg" v-model="images" :limit="10" />
-
         <ProfitDomPrices v-model="smart_prices" />
-
-        <div v-if="prices?.length" class="ParkingEditorView__boxFields3 gridForm">
-          <h1 class="ParkingEditorView__boxFields3H1">Цены 1C</h1>
+        <PskGridContainer grid-span="3" grid-column-count="3" title="Цены 1C">
           <PskInput
             v-model="price_item.cost"
             :label="price_item.price_type + ', ₽'"
@@ -334,10 +316,9 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается в зависимости от настроек
             </el-popover>
           </PskInput>
-        </div>
+        </PskGridContainer>
 
-        <div class="ParkingEditorView__boxFields4 gridForm">
-          <h1 class="ParkingEditorView__boxFields4H1">Прочее</h1>
+        <PskGridContainer grid-column-count="3" grid-span="3" title="Прочее">
           <PskSelect
             v-model="margin_group"
             :options="refs.margin_groups"
@@ -345,10 +326,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             options_value="value"
             label="Группа маржинальности"
           />
-
           <div></div>
           <div></div>
-
           <div class="ParkingEditorView__switchList">
             <PskSwitch v-model="subsidy" label="Субсидия" />
             <PskSwitch v-model="installment" label="Рассрочка" />
@@ -357,37 +336,15 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             <PskSwitch v-model="trade_in" label="Trade-in" />
             <PskSwitch v-model="is_special" label="Особенный" />
           </div>
-        </div>
-      </div>
+        </PskGridContainer>
+      </PskGridContainer>
     </FormLayout>
   </AggregatorsLayout>
 </template>
 
 <style lang="scss">
-.ParkingEditorView {
-  height: 100%;
-}
-
-.ParkingEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.ParkingEditorView__boxFields2H1,
-.ParkingEditorView__boxFields3H1,
-.ParkingEditorView__boxFields4H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.ParkingEditorView__UploadImg {
-  margin: 30px 0 50px 0;
-}
-
 .ParkingEditorView__switchList {
   grid-column: span 3;
-
   display: flex;
   gap: 30px;
   flex-wrap: wrap;

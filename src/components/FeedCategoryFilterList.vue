@@ -2,24 +2,19 @@
 defineProps<{ modelValue: string }>()
 defineEmits(['update:modelValue'])
 
-const feed_category_list = [
-  { id: 1, name: 'cian', icon: '/icons/icon_cian.svg' },
-  { id: 2, name: 'avito', icon: '/icons/icon_avito.svg' },
-  { id: 3, name: 'yandex', icon: '/icons/icon_yandexRealEstate.svg' },
-  { id: 4, name: 'dom_click', icon: '/icons/icon_domClick.svg' }
-]
+const feed_category_list = ['cian', 'avito', 'yandex', 'dom_click', 'm2']
 </script>
 
 <template>
   <div class="FeedCategoryFilterList">
     <div
       v-for="item of feed_category_list"
-      :key="item.id"
+      :key="item"
       class="FeedCategoryFilterList__item"
-      :class="{ active: modelValue === item.name }"
-      @click="$emit('update:modelValue', item.name)"
+      :class="{ active: modelValue === item }"
+      @click="$emit('update:modelValue', item)"
     >
-      <img :src="item.icon" :alt="item.name" />
+      <img :src="`/icons/icon_${item}.svg`" :alt="item" />
     </div>
   </div>
 </template>

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 import api from '@/services/REST/utils/dom_admin'
 
-import getRouteFromAsideMenuByPath from '@/helpers/getDocsLinkFromAsideMenuByPath'
+import getRoute from '@/helpers/getDocsLinkFromAsideMenuByPath'
 
 interface IChangedListItemBtnProps {
   modelValue: boolean
@@ -20,7 +20,7 @@ const model = computed({
 })
 
 const changeActive = (path: string) => async () => {
-  const url = `admin/${getRouteFromAsideMenuByPath(path, 'route')}/${props.uid}/toggle-show`
+  const url = `admin/${getRoute(path, 'route')}/${props.uid}/toggle-show`
   const response = await api.put<{ show: boolean }>(url, { show: !model.value })
 
   return !(!response || response.show === model.value)

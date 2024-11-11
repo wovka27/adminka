@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { useFiltersStore } from '@/stores'
 
 const filters_state = useFiltersStore()
-const emit = defineEmits(['complexSelectedChange'])
+const emit = defineEmits(['selectedChange'])
 
 const tabs = computed(() => filters_state.complex_options.map((i) => ({ label: i.name })))
 
@@ -13,7 +13,7 @@ const model = computed({
   set: (tab) => {
     filters_state.complex_selected = filters_state.complex_options.find((i) => i.name === tab.label)!
     filters_state.house_selected = filters_state.complex_selected.houses[0]
-    emit('complexSelectedChange')
+    emit('selectedChange')
   }
 })
 </script>

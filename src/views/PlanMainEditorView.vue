@@ -46,7 +46,7 @@ const { is_data_loaded, apply, default_fields } = useEditorView({
     description.value = form_data.description || ''
     sanitary_nodes_count.value = getNumString(form_data.sanitary_nodes_count)
     custom_squares.value = Object.entries(form_data.custom_squares).reduce(
-      (acc, [key, val]) => Object.assign(acc, { [key]: getNumString(val) }),
+      (acc, [key, val]) => ({ ...acc, [key]: getNumString(val) }),
       custom_squares.value
     )
     marketing_article.value = form_data.marketing_article || ''
@@ -107,136 +107,60 @@ const legal_text = ref('')
 const planoplan = ref('')
 
 const convertAnalogs = (analogs: IPlanMain['analogs']) =>
-  analogs.reduce((a: any, i: any) => Object.assign(a, { [i.code]: String(i.value || '') }), {}) || []
+  analogs.reduce((a: any, i: any) => ({ ...a, [i.code]: String(i.value || '') }), {}) || []
 const convertPropertiesForRequest = (list: string[]): Record<string, boolean> =>
-  list.filter(Boolean).reduce((acc, i) => Object.assign(acc, { [i]: true }), {})
-const convertPropertiesForData = (obj: Record<string, boolean>): string[] => Object.keys(Object.assign({}, obj))
+  list.filter(Boolean).reduce((acc, i) => ({ ...acc, [i]: true }), {})
+const convertPropertiesForData = (obj: Record<string, boolean>): string[] => Object.keys({ ...obj })
 </script>
 
 <template>
   <FormLayout :apply="apply" v-if="is_data_loaded">
-    <div class="PlanMainEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
+      <PskInput v-model="name" label="Название" disabled class="span-2" />
+      <div></div>
+      <PskInput v-model="title_for_site" label="Название для сайта" placeholder="Введите название" class="span-2" />
 
-      <div class="PlanMainEditorView__boxFields1 gridForm">
-        <PskInput v-model="name" style="grid-column: span 2" label="Название" disabled />
+      <PskGridContainer grid-column-count="3" grid-span="3" title="О планировке">
+        <PskGridContainer grid-column-count="2" grid-span="3">
+          <PskInput v-model="article" label="Артикул" disabled />
+          <PskInput v-model="marketing_article" label="Маркетинговый артикул" placeholder="Введите название" />
+        </PskGridContainer>
 
-        <PskInput
-          v-model="title_for_site"
-          style="grid-column: span 2"
-          label="Название для сайта"
-          placeholder="Введите название"
-        />
-      </div>
-
-      <div class="PlanMainEditorView__boxFields2-container">
-        <div class="PlanMainEditorView__boxFields2">
-          <h3 class="PlanMainEditorView__boxFields2H1" style="grid-column: span 3">О планировке</h3>
-
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; grid-column: span 3">
-            <PskInput v-model="article" label="Артикул" disabled />
-            <PskInput v-model="marketing_article" label="Маркетинговый артикул" placeholder="Введите название" />
-          </div>
-          <PskInput v-model="square" label="Площадь по декларации, м²" disabled type="number" />
-          <PskInput v-model="custom_squares.marketing_square" label="Маркетинговая площадь, м²" type="number">
-            <el-popover placement="top" trigger="hover" width="fit-content">
-              <template #reference>
-                <el-icon class="iconHover_default" style="font-size: 13px">
-                  <Warning />
-                </el-icon>
-              </template>
-              Если заполнено поле Маркетинговая площадь, то оно является приоритетным <br />
-              в качестве передачи в фид как атрибута Площадь квартиры
-            </el-popover>
-          </PskInput>
-          <PskInput v-model="custom_squares.loggia_square" label="Площадь лоджии, м²" type="number">
-            <el-popover placement="top" trigger="hover" width="fit-content">
-              <template #reference>
-                <el-icon class="iconHover_default" style="font-size: 13px">
-                  <Warning />
-                </el-icon>
-              </template>
-              Если заполнено поле Маркетинговая площадь, то оно является приоритетным <br />
-              в качестве передачи в фид как атрибута Площадь квартиры
-            </el-popover>
-          </PskInput>
-          <PskWYSIWYGEditor label="Лигл" :required="!!custom_squares.marketing_square" v-model="legal_text" />
-          <PskInput v-model="rooms" label="Кол-во комнат" disabled type="number" />
-          <PskMultiString v-model="tags" label="Теги" btn_label="Добавить тег" style="grid-column: span 3" />
-          <PskMultiString
-            v-model="properties"
-            label="Свойства"
-            btn_label="Добавить свойство"
-            style="grid-column: span 3"
-          />
-        </div>
-      </div>
-
-      <div class="PlanMainEditorView__boxFields2">
+        <PskInput v-model="square" label="Площадь по декларации, м²" disabled type="number" />
+        <PskInput v-model="custom_squares.marketing_square" label="Маркетинговая площадь, м²" type="number">
+          <el-popover placement="top" trigger="hover" width="fit-content">
+            <template #reference>
+              <el-icon class="iconHover_default" style="font-size: 13px">
+                <Warning />
+              </el-icon>
+            </template>
+            Если заполнено поле Маркетинговая площадь, то оно является приоритетным <br />
+            в качестве передачи в фид как атрибута Площадь квартиры
+          </el-popover>
+        </PskInput>
+        <PskInput v-model="custom_squares.loggia_square" label="Площадь лоджии, м²" type="number" />
+        <PskWYSIWYGEditor label="Лигл" :required="!!custom_squares.marketing_square" v-model="legal_text" />
+        <PskInput v-model="rooms" label="Кол-во комнат" disabled type="number" />
+        <PskMultiString v-model="tags" label="Теги" btn_label="Добавить тег" class="span-3" />
+        <PskMultiString v-model="properties" label="Свойства" btn_label="Добавить свойство" class="span-3" />
         <PskInput v-model="analogs.center" label="Аналог в центре, ₽" type="cash" />
         <PskInput v-model="analogs.secondary" label="Аналог рядом на вторичном рынке, ₽" type="cash" />
-        <PskInput
-          v-model="video_review"
-          label="Видеообзор"
-          placeholder="Введите/вставьте ссылку"
-          style="grid-column: span 3"
-        />
-        <PskInput
-          v-model="planoplan"
-          label="Виджет планоплан"
-          style="grid-column: span 3"
-          placeholder="Вставьте ссылку на виджет"
-        />
-        <PskWYSIWYGEditor v-model="description" label="Описание" style="grid-column: span 3" />
-      </div>
-
-      <UploadImg v-model="images" class="PlanMainEditorView__UploadImg" :limit="10" />
-    </div>
+        <div></div>
+        <PskInput v-model="video_review" label="Видеообзор" placeholder="Введите/вставьте ссылку" class="span-3" />
+        <PskInput v-model="planoplan" label="Виджет планоплан" placeholder="Вставьте ссылку на виджет" class="span-3">
+          <el-popover placement="top" trigger="hover" width="fit-content">
+            <template #reference>
+              <el-icon class="iconHover_default" style="font-size: 13px">
+                <Warning />
+              </el-icon>
+            </template>
+            Несколько ссылок записывать через запятую.
+          </el-popover>
+        </PskInput>
+        <PskWYSIWYGEditor v-model="description" label="Описание" />
+        <UploadImg v-model="images" class="PlanMainEditorView__UploadImg" :limit="10" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.PlanMainEditorView {
-  height: 100%;
-}
-
-.PlanMainEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.PlanMainEditorView__boxFields2H1,
-.PlanMainEditorView__boxFields3H1,
-.PlanMainEditorView__boxFields4H1 {
-  @include setFontStyle6();
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.PlanMainEditorView__boxFields2 {
-  grid-column: span 3;
-  display: grid;
-  gap: 20px 30px;
-  grid-template-columns: 1fr 1fr 1fr;
-  align-items: end;
-  margin-bottom: 20px;
-}
-
-.PlanMainEditorView__boxFields2-container {
-  grid-column: span 3;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.PlanMainEditorView__UploadImg {
-  margin: 30px 0 50px 0;
-}
-
-.PlanMainEditorView__switchList {
-  grid-column: span 3;
-
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-</style>

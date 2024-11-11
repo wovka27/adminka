@@ -9,6 +9,7 @@ import DefaultFormFields from '@/components/DefaultFormFields.vue'
 import HouseAvito from '@/components/House/HouseAvito.vue'
 import HouseCian from '@/components/House/HouseCian.vue'
 import HouseDomClick from '@/components/House/HouseDomClick.vue'
+import HouseM2 from '@/components/House/HouseM2.vue'
 import HouseYandex from '@/components/House/HouseYandex.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
@@ -131,7 +132,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     ['avito_house', { ...aggregator, component: HouseAvito }],
     ['cian_house', { ...aggregator, component: HouseCian }],
     ['dom_click_house', { ...aggregator, component: HouseDomClick }],
-    ['yandex_house', { ...aggregator, component: HouseYandex }]
+    ['yandex_house', { ...aggregator, component: HouseYandex }],
+    ['m2_house', { ...aggregator, component: HouseM2 }]
   ])
   return result.get(aggregator.type)!
 }
@@ -145,25 +147,17 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     @pushCommonData="pushCommonData"
   >
     <FormLayout :apply="apply">
-      <div class="HouseEditorView">
+      <PskGridContainer grid-column-count="3">
         <DefaultFormFields v-model="default_fields" is_show_dates />
-        <div class="HouseEditorView__boxFields1 gridForm">
-          <PskInput v-model="name" style="grid-column: span 2" label="Название" disabled required />
-          <PskInput v-model="ready_date" label="Срок сдачи" placeholder="Введите название" required />
 
-          <PskInput
-            v-model="title_for_site"
-            style="grid-column: span 2"
-            label="Название для сайта"
-            placeholder="Введите название"
-          />
-          <PskInput v-model="slug" label="Якорная ссылка" placeholder="Введите название" />
-          <PskSelect v-model="offer_type" label="Тип предложения" :options="refs.house_offer_types" />
-        </div>
+        <PskInput v-model="name" label="Название" disabled required class="span-2" />
+        <PskInput v-model="ready_date" label="Срок сдачи" placeholder="Введите название" required />
+        <PskInput v-model="title_for_site" label="Название для сайта" placeholder="Введите название" class="span-2" />
+        <PskInput v-model="slug" label="Якорная ссылка" placeholder="Введите название" />
+        <PskSelect v-model="offer_type" label="Тип предложения" :options="refs.house_offer_types" />
 
-        <div class="HouseEditorView__boxFields2 gridForm">
-          <h1 class="HouseEditorView__boxFields1H1">Об объекте</h1>
-          <PskInput v-model="address_fillable" style="grid-column: span 3" label="Адрес" placeholder="Введите адрес" />
+        <PskGridContainer grid-column-count="3" grid-span="3" title="Об объекте">
+          <PskInput v-model="address_fillable" label="Адрес" placeholder="Введите адрес" class="span-3" />
           <PskSelect
             v-model="legal_entity_uid"
             :options="refs.company_groups_with_legal_entities"
@@ -183,27 +177,9 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
           <div></div>
           <PskDate label="Дата фактического ввода в эксплуатацию" v-model="actual_commissioning_at" />
           <PskDate label="Дата фактической передачи ключей" v-model="actual_keys_delivery_at" />
-          <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-        </div>
-      </div>
+          <UploadMedia v-model="materials" :types="material_type_options" />
+        </PskGridContainer>
+      </PskGridContainer>
     </FormLayout>
   </AggregatorsLayout>
 </template>
-
-<style lang="scss">
-.HouseEditorView {
-  height: 100%;
-}
-
-.HouseEditorView__boxFields1,
-.HouseEditorView__boxFields2 {
-  margin: 20px 0 0 0;
-}
-
-.HouseEditorView__boxFields1H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-</style>

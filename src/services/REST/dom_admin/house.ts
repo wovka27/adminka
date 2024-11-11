@@ -29,12 +29,23 @@ export const fetchUpdateHouseAggregatorAvito = async (
 export const fetchGetHouseAggregatorCian = async (uid: string): Promise<IHouseAggregatorCian | null> => {
   return fetchGetAggregator<IHouseAggregatorCian>(uid)
 }
+export const fetchGetHouseAggregatorM2 = async (uid: string): Promise<IHouseAggregatorM2 | null> => {
+  return fetchGetAggregator<IHouseAggregatorM2>(uid)
+}
+
 export const fetchUpdateHouseAggregatorCian = async (
   uid: string,
   request_data: IHouseAggregatorCian['data']
 ): Promise<IHouseAggregatorCian | null> => {
   return fetchUpdateAggregator<IHouseAggregatorCian>(uid, request_data)
 }
+export const fetchUpdateHouseAggregatorM2 = async (
+  uid: string,
+  request_data: IHouseAggregatorM2['data']
+): Promise<IHouseAggregatorM2 | null> => {
+  return fetchUpdateAggregator<IHouseAggregatorM2>(uid, request_data)
+}
+
 export const fetchGetHouseAggregatorDomClick = async (uid: string): Promise<IHouseAggregatorDomClick | null> => {
   return fetchGetAggregator<IHouseAggregatorDomClick>(uid)
 }
@@ -116,6 +127,8 @@ export interface IHouseAggregatorCian extends IAggregatorItem {
     cargo_lifts_count: string
   }
 }
+
+export interface IHouseAggregatorM2 extends IHouseAggregatorCian {}
 
 export interface IHouseAggregatorYandex extends IAggregatorItem {
   media: IMedia[]

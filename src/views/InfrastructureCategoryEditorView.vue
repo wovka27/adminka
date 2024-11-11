@@ -40,7 +40,7 @@ const { is_data_loaded, apply, default_fields } = useEditorView({
     },
     update: {
       fetchUpdateEntity: fetchUpdateInfrastructureCategoryItem,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.uid as string
 
         await detach(uid)
@@ -109,54 +109,21 @@ const complex_uid = ref<string>('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="InfrastructureCategoryEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
-
-      <div class="InfrastructureCategoryEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
-      </div>
-      <div class="InfrastructureCategoryEditorView__boxFields2 gridForm">
-        <h3 class="FlatEditorView__boxFields2H1">О категории</h3>
+      <PskInput v-model="name" label="Название" required placeholder="Введите название" class="span-2" />
+      <PskGridContainer grid-column-count="3" grid-span="3" title="О категории">
         <PskSelect
-          style="grid-column: span 2"
           v-model="complex_uid"
           label="Жилой комплекс"
           options_label="label"
           options_value="value"
           required
           :options="refs.complexes"
+          class="span-2"
         />
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+        <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.InfrastructureCategoryEditorView {
-  height: 100%;
-}
-
-.InfrastructureCategoryEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.InfrastructureCategoryEditorView__boxFields2 {
-}
-
-.FlatEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.InfrastructureCategoryEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.InfrastructureCategoryEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

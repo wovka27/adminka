@@ -134,8 +134,15 @@ body {
 }
 
 
-  // ----------------- STYLES FOR EL-DIALOG (end) -----------------
+// ----------------- STYLES FOR EL-DIALOG (end) -----------------
 
+// ----------------- STYLES FOR EL-NOTIFICATION -----------------
+
+.el-notification__content {
+  text-align: left;
+}
+
+  // ----------------- STYLES FOR EL-NOTIFICATION (end) -----------------
 
 .ListView {
   display: flex;

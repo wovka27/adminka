@@ -37,12 +37,22 @@ export const fetchUpdateEstateAggregatorAvito = async (
 export const fetchGetEstateAggregatorCian = async (uid: string): Promise<IEstateAggregatorCian | null> => {
   return fetchGetAggregator<IEstateAggregatorCian>(uid)
 }
+export const fetchGetEstateAggregatorM2 = async (uid: string): Promise<IEstateAggregatorM2 | null> => {
+  return fetchGetAggregator<IEstateAggregatorM2>(uid)
+}
 
 export const fetchUpdateEstateAggregatorCian = async (
   uid: string,
   request_data: IEstateAggregatorCian['data']
 ): Promise<IEstateAggregatorCian | null> => {
   return fetchUpdateAggregator<IEstateAggregatorCian>(uid, request_data)
+}
+
+export const fetchUpdateEstateAggregatorM2 = async (
+  uid: string,
+  request_data: IEstateAggregatorM2['data']
+): Promise<IEstateAggregatorM2 | null> => {
+  return fetchUpdateAggregator<IEstateAggregatorM2>(uid, request_data)
 }
 
 export const fetchGetEstateAggregatorYandex = async (uid: string): Promise<IEstateAggregatorYandex | null> => {
@@ -166,6 +176,7 @@ export interface IEstateSmartPrice {
   cost: string
   old_cost: null | string
   comm_remune: string
+  is_competitor?: boolean
 }
 
 export interface IEstatePrice {
@@ -178,7 +189,9 @@ export interface IEstateAggregatorAvito extends IAggregatorItem {
   media: IMedia[]
   data: {
     status: boolean
-    flat_type: string
+    force_load: boolean
+    override_global_price: boolean
+    // flat_type: string
     replacement_uid: string
     cost: {
       value: string
@@ -207,7 +220,9 @@ export interface IEstateAggregatorCian extends IAggregatorItem {
   media: IMedia[]
   data: {
     status: boolean
-    flat_type: string
+    force_load: boolean
+    override_global_price: boolean
+    // flat_type: string
     is_apartments: boolean
     replacement_uid: string
     cost: {
@@ -225,11 +240,15 @@ export interface IEstateAggregatorCian extends IAggregatorItem {
   }
 }
 
+export interface IEstateAggregatorM2 extends IEstateAggregatorCian {}
+
 export interface IEstateAggregatorYandex extends IAggregatorItem {
   media: IMedia[]
   data: {
     status: boolean
-    flat_type: string
+    force_load: boolean
+    override_global_price: boolean
+    // flat_type: string
     replacement_uid: string
     cost: {
       value: string
@@ -253,7 +272,9 @@ export interface IEstateAggregatorDomClick extends IAggregatorItem {
   media: IMedia[]
   data: {
     status: boolean
-    flat_type: string
+    force_load: boolean
+    override_global_price: boolean
+    // flat_type: string
     replacement_uid: string
     housing_type: string
     cost: {

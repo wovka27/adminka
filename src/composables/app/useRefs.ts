@@ -29,7 +29,7 @@ export default <T extends RefRequestParamNamesType>(...ref_names: T[]) => {
 
   onMounted(async () => {
     // @ts-ignore
-    refs.value = (await api.get('admin/refs', { q: String(ref_names) })) || defaultValue
+    refs.value = (await api.get('admin/refs', { q: String(ref_names) })) ?? defaultValue
     // console.log(Object.values((await api.get('admin/refs/list')) || {}).flat(Infinity)) // для сверки актуального списка рефов из бэка
   })
 
@@ -73,6 +73,7 @@ interface RefKeys {
   'dom-click-building-state': 'dom_click_building_state'
   'dom-click-parking': 'dom_click_parking'
   'dom-click-renovation-types': 'dom_click_renovation_types'
+  'flat-properties': 'flat_properties'
   'feed-settings-type': 'feed_settings_type'
   features: 'features'
   'house-offer-types': 'house_offer_types'
@@ -136,6 +137,7 @@ export interface InterRefKeysType {
   dom_click_housing_types: IRefOption[]
   dom_click_parking: string[]
   dom_click_renovation_types: string[]
+  flat_properties: IRefOption[]
   feed_settings_type: IRefOption[]
   features: IRefOption[]
   house_offer_types: string[]
@@ -164,6 +166,7 @@ export interface IRefOption {
   value: string
   label: string
   is_active?: boolean
+  is_competitor?: boolean
 }
 
 export interface IRefNestedOption extends IRefOption {

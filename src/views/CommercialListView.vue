@@ -34,9 +34,9 @@ const { setList, data_list, sort, meta, handleChangeFilter } = useListView<IEsta
 
 <template>
   <div class="CommercialListView ListView">
-    <FilterComplex @complexSelectedChange="handleChangeFilter" />
+    <FilterComplex @selectedChange="handleChangeFilter" />
 
-    <FilterHouse @houseSelectedChange="handleChangeFilter" />
+    <FilterHouse @selectedChange="handleChangeFilter" />
 
     <PskTable :data="data_list" v-model:meta="meta" @update:meta="setList" v-model:sort="sort">
       <el-table-column label="Коммерция" sortable prop="name" min-width="350px">
@@ -49,7 +49,7 @@ const { setList, data_list, sort, meta, handleChangeFilter } = useListView<IEsta
         </template>
       </el-table-column>
 
-      <el-table-column label="Сортировка" sortable prop="weight" min-width="150" />
+      <el-table-column label="Статус" sortable prop="status" min-width="140" />
 
       <el-table-column label="Площадь" sortable prop="square" min-width="150">
         <template #default="scope">

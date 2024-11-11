@@ -119,110 +119,78 @@ const website_url = ref('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="LegalEntityEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
+      <PskSelect
+        v-model="company_group_uid"
+        :options="refs.company_groups"
+        options_label="label"
+        options_value="value"
+        label="Группа компаний"
+        placeholder="Выберите группу"
+        required
+        class="span-2"
+      >
+        <el-popover placement="top" trigger="hover" width="fit-content">
+          <template #reference>
+            <el-icon class="iconHover_default" style="font-size: 13px">
+              <Warning />
+            </el-icon>
+          </template>
+          Забирается на все типы фидов
+        </el-popover>
+      </PskSelect>
+      <div></div>
+      <PskInput
+        v-model="abbreviated_name"
+        label="Сокращенное наименование"
+        required
+        placeholder="Введите название"
+        class="span-2"
+      />
+      <div></div>
+      <PskInput v-model="name" label="Полное наименование" required placeholder="Введите название" class="span-3" />
+      <PskInput v-model="inn" label="ИНН" type="number" placeholder="Введите номер" limit="10">
+        <el-popover placement="top" trigger="hover" width="fit-content">
+          <template #reference>
+            <el-icon class="iconHover_default" style="font-size: 13px">
+              <Warning />
+            </el-icon>
+          </template>
+          Забирается на все типы фидов
+        </el-popover>
+      </PskInput>
+      <PskInput v-model="kpp" label="КПП" type="number" placeholder="Введите номер" limit="9" />
+      <PskInput v-model="ogrn" label="ОГРН" type="number" placeholder="Введите номер" limit="13" />
+      <PskInput v-model="phone_number" label="Номер телефона" type="phone" placeholder="Введите номер" />
+      <PskInput v-model="website_url" label="Ссылка на сайт" placeholder="Введите или вставьте ссылку">
+        <el-popover placement="top" trigger="hover" width="fit-content">
+          <template #reference>
+            <el-icon class="iconHover_default" style="font-size: 13px">
+              <Warning />
+            </el-icon>
+          </template>
+          Забирается на все типы фидов
+        </el-popover>
+      </PskInput>
+      <PskInput v-model="email" label="E-mail застройщика" placeholder="Введите email">
+        <el-popover placement="top" trigger="hover" width="fit-content">
+          <template #reference>
+            <el-icon class="iconHover_default" style="font-size: 13px">
+              <Warning />
+            </el-icon>
+          </template>
+          Забирается на все типы фидов
+        </el-popover>
+      </PskInput>
+      <PskInput v-model="legal_address" label="Юридический адрес" placeholder="Введите адрес" class="span-3" />
+      <PskInput v-model="actual_address" label="Фактический адрес" placeholder="Введите адрес" class="span-3" />
 
-      <div class="LegalEntityEditorView__boxFields1 gridForm">
-        <PskSelect
-          v-model="company_group_uid"
-          :options="refs.company_groups"
-          options_label="label"
-          options_value="value"
-          label="Группа компаний"
-          placeholder="Выберите группу"
-          required
-          style="grid-column: span 2"
-        >
-          <el-popover placement="top" trigger="hover" width="fit-content">
-            <template #reference>
-              <el-icon class="iconHover_default" style="font-size: 13px">
-                <Warning />
-              </el-icon>
-            </template>
-            Забирается на все типы фидов
-          </el-popover>
-        </PskSelect>
-        <PskInput
-          style="grid-column: span 2"
-          v-model="abbreviated_name"
-          label="Сокращенное наименование"
-          required
-          placeholder="Введите название"
-        />
-        <PskInput
-          style="grid-column: span 3"
-          v-model="name"
-          label="Полное наименование"
-          required
-          placeholder="Введите название"
-        />
-        <PskInput v-model="inn" label="ИНН" type="number" placeholder="Введите номер" limit="10">
-          <el-popover placement="top" trigger="hover" width="fit-content">
-            <template #reference>
-              <el-icon class="iconHover_default" style="font-size: 13px">
-                <Warning />
-              </el-icon>
-            </template>
-            Забирается на все типы фидов
-          </el-popover>
-        </PskInput>
-        <PskInput v-model="kpp" label="КПП" type="number" placeholder="Введите номер" limit="9" />
-        <PskInput v-model="ogrn" label="ОГРН" type="number" placeholder="Введите номер" limit="13" />
-        <PskInput v-model="phone_number" label="Номер телефона" type="phone" placeholder="Введите номер" />
-        <PskInput v-model="website_url" label="Ссылка на сайт" placeholder="Введите или вставьте ссылку">
-          <el-popover placement="top" trigger="hover" width="fit-content">
-            <template #reference>
-              <el-icon class="iconHover_default" style="font-size: 13px">
-                <Warning />
-              </el-icon>
-            </template>
-            Забирается на все типы фидов
-          </el-popover>
-        </PskInput>
-        <PskInput v-model="email" label="E-mail застройщика" placeholder="Введите email">
-          <el-popover placement="top" trigger="hover" width="fit-content">
-            <template #reference>
-              <el-icon class="iconHover_default" style="font-size: 13px">
-                <Warning />
-              </el-icon>
-            </template>
-            Забирается на все типы фидов
-          </el-popover>
-        </PskInput>
-        <PskInput
-          style="grid-column: span 3"
-          v-model="legal_address"
-          label="Юридический адрес"
-          placeholder="Введите адрес"
-        />
-        <PskInput
-          style="grid-column: span 3"
-          v-model="actual_address"
-          label="Фактический адрес"
-          placeholder="Введите адрес"
-        />
-      </div>
-      <div class="LegalEntityEditorView__boxFields1 gridForm">
-        <h1 style="grid-column: span 3" class="LegalEntityEditorView__h1">Руководитель</h1>
+      <PskGridContainer grid-column-count="3" grid-span="3" title="Руководитель">
         <PskInput v-model="leader_last_name" label="Фамилия" placeholder="Введите фамилию" />
         <PskInput v-model="leader_first_name" label="Имя" placeholder="Введите имя" />
         <PskInput v-model="leader_second_name" label="Отчество" placeholder="Введите отчество" />
-      </div>
-    </div>
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.LegalEntityEditorView {
-  height: 100%;
-}
-
-.LegalEntityEditorView__boxFields1:not(:last-child) {
-  margin-top: 20px;
-}
-
-.LegalEntityEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 0 0;
-}
-</style>

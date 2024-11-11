@@ -34,9 +34,9 @@ const { sort, meta, setList, data_list, handleChangeFilter } = useListView<IEntr
 
 <template>
   <div class="EntranceListView ListView">
-    <FilterComplex @complexSelectedChange="handleChangeFilter" />
+    <FilterComplex @selectedChange="handleChangeFilter" />
 
-    <FilterHouse @houseSelectedChange="handleChangeFilter" />
+    <FilterHouse @selectedChange="handleChangeFilter" />
 
     <PskTable :data="data_list" v-model:meta="meta" @update:meta="setList" v-model:sort="sort">
       <el-table-column label="Подъезды/секции" sortable prop="name" width="350px">

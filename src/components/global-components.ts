@@ -1,12 +1,14 @@
 import { Calendar } from '@element-plus/icons-vue'
 
 import CollapseHOC from '@/components/UI/CollapseHOC.vue'
+import PskAlert from '@/components/UI/PskAlert.vue'
 import PskButton from '@/components/UI/PskButton.vue'
 import PskCascader from '@/components/UI/PskCascader.vue'
 import PskCheckList from '@/components/UI/PskCheckList.vue'
 import PskDate from '@/components/UI/PskDate.vue'
 import PskDrawer from '@/components/UI/PskDrawer.vue'
 import PskField from '@/components/UI/PskField.vue'
+import PskGridContainer from '@/components/UI/PskGridContainer.vue'
 import PskInfoCollapse from '@/components/UI/PskInfoCollapse.vue'
 import PskInput from '@/components/UI/PskInput.vue'
 import PskInputRange from '@/components/UI/PskInputRange.vue'
@@ -121,5 +123,13 @@ export default [
   {
     name: 'PskTableTdName',
     component: PskTableTdName
+  },
+  {
+    name: 'PskGridContainer',
+    component: PskGridContainer
+  },
+  {
+    name: 'PskAlert',
+    component: PskAlert
   }
 ]

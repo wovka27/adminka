@@ -11,9 +11,10 @@ import FormLayout from '@/layouts/FormLayout.vue'
 import CommercialAvito from '@/components/Commercial/CommercialAvito.vue'
 import CommercialCian from '@/components/Commercial/CommercialCian.vue'
 import CommercialDomClick from '@/components/Commercial/CommercialDomClick.vue'
+import CommercialM2 from '@/components/Commercial/CommercialM2.vue'
 import CommercialYandex from '@/components/Commercial/CommercialYandex.vue'
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
-import ProfitDomPrices from '@/components/ProfitDomPrices.vue'
+import ProfitDomPrices from '@/components/ProfitDomPrices/ProfitDomPrices.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
@@ -183,7 +184,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     ['avito_real_property', { ...aggregator, component: CommercialAvito }],
     ['cian_real_property', { ...aggregator, component: CommercialCian }],
     ['dom_click_real_property', { ...aggregator, component: CommercialDomClick }],
-    ['yandex_real_property', { ...aggregator, component: CommercialYandex }]
+    ['yandex_real_property', { ...aggregator, component: CommercialYandex }],
+    ['m2_real_property', { ...aggregator, component: CommercialM2 }]
   ])
   return result.get(aggregator.type)!
 }
@@ -197,26 +199,14 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     @pushCommonData="pushCommonData"
   >
     <FormLayout :apply="apply">
-      <div class="CommercialEditorView">
+      <PskGridContainer grid-column-count="3">
         <DefaultFormFields v-model="default_fields" is_show_dates />
+        <PskInput v-model="name" label="Название" disabled class="span-2" />
+        <PskInput v-model="status" label="Статус" disabled />
+        <PskInput v-model="title_for_site" label="Название для сайта" placeholder="Введите название" class="span-2" />
 
-        <div class="CommercialEditorView__boxFields1 gridForm">
-          <PskInput v-model="name" style="grid-column: span 2" label="Название" disabled />
-          <PskInput v-model="status" label="Статус" disabled />
-
-          <PskInput
-            v-model="title_for_site"
-            style="grid-column: span 2"
-            label="Название для сайта"
-            placeholder="Введите название"
-          />
-        </div>
-
-        <div class="CommercialEditorView__boxFields2 gridForm">
-          <h3 class="CommercialEditorView__boxFields2H1">О квартире</h3>
-
+        <PskGridContainer grid-column-count="3" grid-span="3" title="О квартире">
           <PskInput v-model="article" label="Артикул" disabled />
-
           <PskInput v-model="plan_type" label="Тип планировки" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -227,7 +217,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="common_square" label="Площадь, м²" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -238,7 +227,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="ceiling_height" label="Высота потолка, м">
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -249,7 +237,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="floor" label="Этаж" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -260,7 +247,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="number_on_floor" label="Номер на этаже" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -313,17 +299,15 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
           <PskInput
             v-model="video_review"
             label="Видеообзор"
-            style="grid-column: span 3"
+            class="span-3"
             placeholder="Введите/вставьте ссылку"
           />
-        </div>
+        </PskGridContainer>
 
         <UploadImg class="CommercialEditorView__UploadImg" v-model="images" :limit="10" />
-
         <ProfitDomPrices v-model="smart_prices" />
 
-        <div v-if="prices?.length" class="CommercialEditorView__boxFields3 gridForm">
-          <h1 class="CommercialEditorView__boxFields3H1">Цены 1C</h1>
+        <PskGridContainer v-if="prices.length" grid-span="3" grid-column-count="3" title="Цены 1C">
           <PskInput
             v-model="price_item.cost"
             :label="price_item.price_type + ', ₽'"
@@ -341,10 +325,9 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается в зависимости от настроек
             </el-popover>
           </PskInput>
-        </div>
+        </PskGridContainer>
 
-        <div class="CommercialEditorView__boxFields4 gridForm">
-          <h1 class="CommercialEditorView__boxFields4H1">Прочее</h1>
+        <PskGridContainer grid-column-count="3" grid-span="3" title="Прочее">
           <PskSelect
             v-model="margin_group"
             :options="refs.margin_groups"
@@ -352,10 +335,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             options_value="value"
             label="Группа маржинальности"
           />
-
           <div></div>
           <div></div>
-
           <div class="CommercialEditorView__switchList">
             <PskSwitch v-model="subsidy" label="Субсидия" />
             <PskSwitch v-model="installment" label="Рассрочка" />
@@ -364,37 +345,15 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             <PskSwitch v-model="trade_in" label="Trade-in" />
             <PskSwitch v-model="is_special" label="Особенный" />
           </div>
-        </div>
-      </div>
+        </PskGridContainer>
+      </PskGridContainer>
     </FormLayout>
   </AggregatorsLayout>
 </template>
 
 <style lang="scss">
-.CommercialEditorView {
-  height: 100%;
-}
-
-.CommercialEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.CommercialEditorView__boxFields2H1,
-.CommercialEditorView__boxFields3H1,
-.CommercialEditorView__boxFields4H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.CommercialEditorView__UploadImg {
-  margin: 30px 0 50px 0;
-}
-
 .CommercialEditorView__switchList {
   grid-column: span 3;
-
   display: flex;
   gap: 30px;
   flex-wrap: wrap;

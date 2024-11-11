@@ -29,23 +29,19 @@ export default async (app_state_store: ReturnType<typeof useAppStateStore>, rout
         return
       }
 
-      let error_title: string = ''
-      let error_description: string[] = []
+      let title: string = ''
+      let description: string[] = []
 
-      for (const [key, val] of Object.entries(error)) {
-        if (key === ('message' || 'error') && typeof val === 'string') {
-          error_title = val
-        }
-        if (val && typeof val === 'object') {
-          error_description = Object.entries(val).reduce((acc: string[], [_, val]) => {
-            if (Array.isArray(val) && typeof val[0] === 'string') acc.push(val[0])
+      for (const [k, v] of Object.entries(error)) {
+        if (k === ('message' || 'error') && typeof v === 'string') title = v
 
-            return acc
-          }, [])
-        }
+        if (v && typeof v === 'object')
+          description = Object.values(v)
+            .filter((i) => Array.isArray(i) && typeof i[0] === 'string')
+            .map((i) => i[0])
       }
 
-      app_state_store.error_list.push({ title: error_title, description: error_description })
+      app_state_store.error_list.push({ title, description })
     },
     cbHandlerErrorRefreshToken: async () => {
       await router.replace('/login')

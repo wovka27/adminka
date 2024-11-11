@@ -18,6 +18,10 @@ export const fetchGetFeed = async (uid: string) => {
   return await api.get<IFeed>(`admin/aggregators/feeds/${uid}`)
 }
 
+export const fetchGetForcedFlatsFeed = async (uid: string) => {
+  return await api.get<IForcedFlats>(`admin/aggregators/feeds/${uid}/forced-flats`)
+}
+
 export const fetchGenerateFeed = async (uid: string) => {
   const response = await api.post<{ message: string }>(`admin/aggregators/feeds/${uid}/generate`)
   if (!response) return
@@ -63,4 +67,23 @@ export interface IFeed {
   created_at: string
   updated_at: string
   deleted_at: string
+}
+
+export interface IForcedFlats {
+  override_global_price_flats: {
+    uid: string
+    name: string
+    uid_aggregator: string
+    override_global_price: boolean
+    force_load: boolean
+    status: string
+  }[]
+  force_load_flats: {
+    uid: string
+    name: string
+    uid_aggregator: string
+    override_global_price: boolean
+    force_load: boolean
+    status: string
+  }[]
 }

@@ -37,7 +37,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateEstateAggregatorCian,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -58,7 +58,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
     action_id.value = form_data.data.action_id || ''
     is_apartments.value = !!form_data.data.is_apartments
   },
-  getRequestData: (): IEstateAggregatorCian['data'] => ({
+  getRequestData: () => ({
     ...getRequestParameters(),
 
     description: description.value,
@@ -86,27 +86,22 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
-      <PskAlert
-        style="grid-column: span 3; margin-top: 10px"
-        type="info"
-        text="Данная информация будет использоваться для вывода на Циан"
-      />
+    <PskGridContainer grid-column-count="3" grid-span="3">
+      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Циан" />
       <UnloadingParameters
         v-model="unloading_parameters"
         :replacement_room_count_options="refs.cian_replacement_room_count"
       />
-      <div style="grid-column: span 3" class="ComplexEditorView__boxFields2 gridForm">
-        <h3 class="ComplexEditorView__boxFields2H1">Общая информация</h3>
+      <PskGridContainer grid-span="3" grid-column-count="3" title="Общая информация">
         <PskSwitch label="Апартаменты" v-model="is_apartments" />
         <PskSwitch v-model="is_in_hidden_base" label="Размещение в закрытой базе" />
         <div></div>
         <PskSelect v-model="category" label="Категория" :options="refs.cian_categories" />
         <PskSelect v-model="decoration" label="Отделка" :options="refs.cian_decoration_types" />
         <PskInput v-model="phone_number" label="Телефон в объявлении" type="phone" />
-      </div>
-      <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
       <PskWYSIWYGEditor label="Описание" v-model="description" />
-    </div>
+      <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+    </PskGridContainer>
   </FormLayout>
 </template>

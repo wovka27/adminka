@@ -26,7 +26,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateHouseAggregatorCian,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -68,30 +68,21 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
-      <PskAlert
-        style="grid-column: span 3"
-        type="info"
-        text="Данная информация будет использоваться для вывода на Циан"
-      />
+    <PskGridContainer grid-column-count="3" grid-span="3">
+      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Циан" />
       <PskInput v-model="house_id" label="ID ГП объекта" placeholder="Введите ID" type="number" />
       <PskInput
+        class="span-3"
         v-model="project_declaration_url"
-        style="grid-column: span 3"
         label="Проектная декларация"
         placeholder="Вставьте ссылку"
       />
       <PskSelect v-model="parking_type" label="Парковка" :options="refs.cian_parking" />
       <PskSwitch v-model="has_ramp" label="Пандус" />
       <PskSwitch v-model="is_house_complete" label="Дом сдан" />
-      <div
-        v-if="material_type_options?.length"
-        style="grid-column: span 3"
-        class="ComplexEditorView__boxFields2 gridForm"
-      >
-        <h3 class="ComplexEditorView__boxFields2H1">Галерея</h3>
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+      <PskGridContainer v-if="material_type_options?.length" grid-span="3" grid-column-count="3" title="Галерея">
+        <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>

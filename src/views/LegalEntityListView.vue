@@ -37,7 +37,7 @@ const { setList, data_list, sort, meta } = useListView<ILegalEntityListItem>({
         <template #default="scope">
           <PskTableTdName
             :uid="scope.row.uid"
-            :name="scope.row.name"
+            :name="scope.row.abbreviated_name"
             :route="`/real_estate_developers_legal_entities/${scope.row.uid}`"
           />
         </template>

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import getTimeRanges from '@/helpers/getTimeRanges'
-
 interface IWorkDayField {
   modelValue: IWorkDayFieldModelValueItem[]
 }
@@ -18,7 +16,10 @@ interface ISelectItem {
   multi?: boolean
 }
 
-const time_ranges_list = getTimeRanges()
+const time_ranges_list = Array.from({ length: (24 * 60) / 5 }, (_, i) =>
+  new Date(0, 0, 0, 0, i * 5).toLocaleTimeString(window.navigator.language, { hour: 'numeric', minute: 'numeric' })
+)
+
 const work_days_list = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 
 const props = defineProps<IWorkDayField>()

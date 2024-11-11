@@ -16,7 +16,6 @@ import {
 } from '@/services/REST/dom_admin/complex'
 
 import conversionWorkDayForRequest, { type WorkingDaysValueType } from '@/helpers/conversionWorkDayForRequest'
-import getTimeZoneValueList from '@/helpers/getTimeZoneValueList'
 import resetConversionWorkDay from '@/helpers/resetConversionWorkDay'
 
 const router = useRouter()
@@ -30,7 +29,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateComplexAggregatorDomClick,
-      beforeResponseFn: async () => {
+      afterResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -116,7 +115,7 @@ const work_day = ref<WorkingDaysValueType[]>([])
 const utp = ref<'Основное УТП' | 'Второстепенное УТП'>('Основное УТП')
 const utp_options: (typeof utp.value)[] = ['Основное УТП', 'Второстепенное УТП']
 
-const timezone_options = getTimeZoneValueList()
+const timezone_options = Array.from({ length: 25 }, (_, index) => (index > 12 ? `+${index - 12}` : `${index - 12}`))
 
 const changeUTP = (value: typeof utp.value) => {
   utp.value = value
@@ -136,12 +135,8 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
-      <PskAlert
-        style="grid-column: span 3"
-        type="info"
-        text="Данная информация будет использоваться для вывода на ДомКлик"
-      />
+    <PskGridContainer grid-span="3" grid-column-count="3">
+      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на ДомКлик" />
       <PskInput v-model="complex_id" label="ID ЖК в Домклик" placeholder="Введите ID" />
       <PskSelect v-model="parking" label="Наличие парковки" :options="refs.dom_click_parking" />
       <div></div>
@@ -161,66 +156,45 @@ defineExpose({ getIsStateBeforeEqualAfter })
         <PskSwitch v-model="kindergarten" label="Детский сад" />
       </div>
 
-      <div style="grid-column: span 3" class="ComplexEditorView__boxFields2 gridForm">
-        <h3 class="ComplexEditorView__boxFields2H1">УТП</h3>
-        <PskTabSelect
-          style="grid-column: span 3"
-          :model-value="utp"
-          @update:modelValue="changeUTP($event)"
-          :options="utp_options"
-        />
+      <PskGridContainer grid-span="3" grid-column-count="2" title="УТП">
+        <PskTabSelect class="span-3" :model-value="utp" @update:modelValue="changeUTP($event)" :options="utp_options" />
         <PskInput
           v-if="utp === 'Основное УТП'"
-          style="grid-column: span 3"
+          class="span-3"
           v-model="utp_main_text"
           label="Уникальное торговое предложение"
         />
         <PskInput
           v-if="utp === 'Основное УТП'"
-          style="grid-column: span 3"
+          class="span-3"
           v-model="utp_main_title"
           label="Заголовок"
           placeholder="Введите заголовок"
         />
         <PskInput
           v-if="utp === 'Второстепенное УТП'"
-          style="grid-column: span 3"
+          class="span-3"
           v-model="utp_secondary_text"
           label="Уникальное торговое предложение"
         />
         <PskInput
           v-if="utp === 'Второстепенное УТП'"
-          style="grid-column: span 3"
+          class="span-3"
           v-model="utp_secondary_title"
           label="Заголовок"
           placeholder="Введите заголовок"
         />
 
         <template v-for="(type, idx) of material_type_options" :key="type.code">
-          <UploadMedia
-            v-if="utp === utp_options[idx]"
-            style="grid-column: span 3"
-            v-model="materials"
-            :types="[type]"
-          />
+          <UploadMedia v-if="utp === utp_options[idx]" class="span-3" v-model="materials" :types="[type]" />
         </template>
-      </div>
-
+      </PskGridContainer>
       <PskWYSIWYGEditor v-model="description" label="Описание" />
-
       <PskInput style="grid-column: span 2; margin-top: 30px" v-model="video" label="Ссылка на видео" />
-
-      <div style="grid-column: span 3" class="ComplexEditorView__boxFields2 gridForm">
-        <h3 class="ComplexEditorView__boxFields2H1">Отдел продаж</h3>
+      <PskGridContainer grid-span="3" grid-column-count="3" title="Отдел продаж">
         <PskMapField label="Метка на карте" required id="map" style="grid-column: span 2" v-model="geotag" />
         <div></div>
-        <PskInput
-          style="grid-column: span 3"
-          v-model="address"
-          label="Адрес отдела продаж"
-          required
-          placeholder="Введите адрес"
-        />
+        <PskInput class="span-3" v-model="address" label="Адрес отдела продаж" required placeholder="Введите адрес" />
         <PskInput
           v-model="sales_phone"
           label="Телефон отдела продаж"
@@ -237,7 +211,7 @@ defineExpose({ getIsStateBeforeEqualAfter })
         />
         <PskSelect v-model="timezone" :options="timezone_options" label="Часовой пояс" required />
         <WorkDayFieldList v-model="work_day" />
-      </div>
-    </div>
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>

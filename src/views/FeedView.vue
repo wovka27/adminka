@@ -40,10 +40,7 @@ const { meta, setList, data_list, sort, handleChangeFilter } = useListView<IFeed
   getRightKindOfResponseForDataList: (response) => response.payload,
   filter: {
     filterFn: (query, params) => {
-      if (feed_category_selected.value) {
-        params.type = feed_category_selected.value
-        query.type = feed_category_selected.value
-      }
+      if (feed_category_selected.value) query.type = params.type = feed_category_selected.value
     }
   },
 
@@ -86,9 +83,9 @@ modal_confirm_store.callback = async (uid) => {
         <template #default="scope">
           <TableActionsContainer>
             <PskLink small-font-weight to="" @click="fetchGenerateFeed(scope.row.uid)">Генерация</PskLink>
-            <PskLink small-font-weight to="" @click="modal_confirm_store.openModal(() => scope.row.uid)"
-              >Удалить</PskLink
-            >
+            <PskLink small-font-weight to="" @click="modal_confirm_store.openModal(() => scope.row.uid)">
+              Удалить
+            </PskLink>
             <PskLink small-font-weight :to="`/feed/${scope.row.uid}`">Изменить</PskLink>
           </TableActionsContainer>
         </template>

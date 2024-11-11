@@ -14,11 +14,10 @@ export interface IUploadImgProps {
   modelValue: IImage[]
 }
 
-const modal_image_store = useModalImageStore()
-const app_state_store = useAppStateStore()
-
 const props = defineProps<IUploadImgProps>()
 const emit = defineEmits(['update:modelValue'])
+const modal_image_store = useModalImageStore()
+const app_state_store = useAppStateStore()
 
 const model = ref<IImage[]>([])
 
@@ -139,6 +138,7 @@ const handleChangeFileInput = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const files = target.files || []
   const request_data = new FormData()
+
   for await (const file of files) {
     request_data.set('tag', tag.value!.uid)
     request_data.set('file', file, file.name)
@@ -153,18 +153,18 @@ const handleChangeFileInput = async (event: Event) => {
 
     model.value = [
       ...props.modelValue,
-      {
-        ...response,
-        uid: response.uid,
-        path: response.url,
-        name: response.tag.title
-      }
+      { ...response, uid: response.uid, path: response.url, name: response.tag.title }
     ]
   }
 
   if (tag.value!.is_multiple) {
     ImgGallery_page_current.value = 1
     ImgGallery_setImgList()
+    return
+  }
+
+  if (!tag.value?.is_multiple) {
+    apply()
     return
   }
 
@@ -186,7 +186,7 @@ onUpdated(() => {
 </script>
 
 <template>
-  <div class="UploadImg" v-if="tag_options.length">
+  <div class="UploadImg span-3" v-if="tag_options.length">
     <PskTabSelect :options="tag_options" v-model="tag" options_label="name" />
 
     <div class="UploadImg__imgBoxList">
@@ -374,7 +374,7 @@ onUpdated(() => {
 
 .ImgGallery__mediaBox {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
 

@@ -28,7 +28,7 @@ defineEmits(['update:modelValue'])
           v-for="(model, idx) in modelValue"
           :key="idx"
           :model-value="model"
-          placeholder="Введите название"
+          :placeholder="placeholder ?? 'Введите название'"
           @update:model-value="$emit('update:modelValue', modelValue.toSpliced(idx, 1, $event))"
           :handle-removed="() => $emit('update:modelValue', modelValue.toSpliced(idx, 1))"
         />

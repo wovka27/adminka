@@ -5,6 +5,7 @@ import { useFiltersStore } from '@/stores'
 
 import RestApi from '@/services/REST/utils/RestApi'
 
+import excludeProp from '@/helpers/excludeProp'
 import getMetaFromUrlQuery from '@/helpers/getMetaFromUrlQuery'
 
 type IResponseDataList<T> = IUseMeta<T[]> | T[] | null
@@ -28,7 +29,7 @@ interface IListOptions<T> {
   fetchGetList: (meta: IMeta, params: Record<string, any>) => Promise<IResponseDataList<T>>
   /**
    *
-   * Получение нужного вида ответа для списка данных
+   * Получение нужного вида ответа для списка данных (пример: response || response.<key>)
    * @param response
    *
    */
@@ -69,7 +70,7 @@ interface IListOptions<T> {
   handleChangeFilterCallback?: (...args: any) => void
   /**
    *
-   * Дополнительная логика для монтирования страницы
+   * Дополнительная логика при монтировании страницы
    *
    */
   onBeforeMountCallback?: () => Promise<void>
@@ -84,34 +85,23 @@ export default <T>(options: IListOptions<T>) => {
 
   const setList = async (): Promise<void> => {
     const request_params: Record<string, any> = {}
+    const query: Record<string, any> = excludeProp('page_last', meta.value)
 
-    const query: Record<string, any> = {
-      page_current: meta.value.page_current,
-      page_per: meta.value.page_per
-    }
-
-    if (options.sort && sort.value) {
-      request_params.sort = sort.value
-      query.sort = sort.value
-    }
+    if (options.sort && sort.value) query.sort = request_params.sort = sort.value
 
     if (options.filter?.complex) {
-      if (filters_store.complex_selected?.uid) {
-        request_params.complex = filters_store.complex_selected.uid
-        query.complex = filters_store.complex_selected.uid
-      }
+      if (filters_store.complex_selected?.uid)
+        query.complex = request_params.complex = filters_store.complex_selected.uid
 
-      if (options.filter?.house && filters_store.complex_selected?.uid && filters_store.house_selected?.uid) {
-        request_params.house = filters_store.house_selected.uid
-        query.house = filters_store.house_selected.uid
-      }
+      if (options.filter?.house && filters_store.complex_selected?.uid && filters_store.house_selected?.uid)
+        query.house = request_params.house = filters_store.house_selected.uid
     }
 
     options.filter?.filterFn?.(query, request_params)
 
-    await options.router.replace({
-      query: Object.fromEntries(new URLSearchParams(RestApi.queryStringify(query)))
-    })
+    const rQuery = { query: Object.fromEntries(new URLSearchParams(RestApi.queryStringify(query))) }
+
+    await options.router.replace(rQuery)
 
     const response_data_list = await options.fetchGetList(meta.value, request_params)
 
@@ -119,9 +109,7 @@ export default <T>(options: IListOptions<T>) => {
 
     data_list.value = options.getRightKindOfResponseForDataList(response_data_list)
 
-    if (options.meta) {
-      meta.value.page_last = (<IUseMeta<T[]>>response_data_list).meta.last_page
-    }
+    if (options.meta) meta.value.page_last = (<IUseMeta<T[]>>response_data_list).meta.last_page
   }
 
   const handleChangeFilter = async (...args: any) => {
@@ -143,12 +131,10 @@ export default <T>(options: IListOptions<T>) => {
         filters_store.house_options.find(findQueryPredicate('house')) ?? filters_store.house_selected
     }
 
-    if (options.meta) {
-      meta.value = getMetaFromUrlQuery()
-    }
-    if (options.sort) {
+    if (options.meta) meta.value = getMetaFromUrlQuery(options.router)
+
+    if (options.sort)
       sort.value = RestApi.parseQueryString(RestApi.queryStringify(options.router.currentRoute.value.query))?.sort
-    }
 
     await options.onBeforeMountCallback?.()
 

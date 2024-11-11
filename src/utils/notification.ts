@@ -1,6 +1,4 @@
 import type { NotificationParams } from 'element-plus'
 
-export const notification = (options: NotificationParams) => {
-  // @ts-ignore
-  ElNotification(options)
-}
+// @ts-ignore
+export const notification = (options: NotificationParams) => void ElNotification(options)

@@ -55,7 +55,7 @@ const tab_active = computed({
 const aggregator_type_current = computed({
   get: () => props.aggregators.find((i) => i.uid === router.currentRoute.value.params.aggregator_uid)!,
 
-  set: (aggregator: IAggregatorsLayoutProps['aggregators'][0]) => {
+  set: (aggregator: IAggregatorsLayoutProps['aggregators'][number]) => {
     router.replace({ params: { uid: router.currentRoute.value.params.uid, aggregator_uid: aggregator.uid } })
   }
 })

@@ -12,13 +12,15 @@ import DefaultFormFields from '@/components/DefaultFormFields.vue'
 import FlatAvito from '@/components/Flat/FlatAvito.vue'
 import FlatCian from '@/components/Flat/FlatCian.vue'
 import FlatDomClick from '@/components/Flat/FlatDomClick.vue'
+import FlatM2 from '@/components/Flat/FlatM2.vue'
 import FlatYandex from '@/components/Flat/FlatYandex.vue'
-import ProfitDomPrices from '@/components/ProfitDomPrices.vue'
+import ProfitDomPrices from '@/components/ProfitDomPrices/ProfitDomPrices.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadImages from '@/composables/app/useUploadImages'
 
+import type { IApiFlatPropsListItem } from '@/services/REST/dom_admin/api_flat_props'
 import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import {
   type IEstate,
@@ -34,7 +36,7 @@ import getNumString from '@/helpers/getNumString'
 
 const router = useRouter()
 
-const refs = useRefs('interior-types', 'window-views', 'window-placements', 'margin-groups')
+const refs = useRefs('interior-types', 'window-views', 'window-placements', 'margin-groups', 'flat-properties')
 
 const price_options_store = usePricesOptionsStore()
 const { getGlobalSettings } = useGlobalSettingsStore()
@@ -97,6 +99,9 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
     loggias_count.value = form_data.loggias_count || ''
     balconies_count.value = form_data.balconies_count || ''
     planoplan.value = form_data.planoplan || ''
+    properties.value = (form_data.properties ?? []).map((i: IApiFlatPropsListItem | string) =>
+      typeof i === 'string' ? i : i.uid
+    )
 
     global_settings.value = form_data.global_settings
 
@@ -141,7 +146,8 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
     is_penthouse: is_penthouse.value,
     loggias_count: loggias_count.value && loggias_count.value,
     balconies_count: balconies_count.value && balconies_count.value,
-    planoplan: planoplan.value
+    planoplan: planoplan.value,
+    properties: properties.value
   }),
   mount: {
     common: {
@@ -210,6 +216,7 @@ const is_penthouse = ref(false)
 const loggias_count = ref('')
 const balconies_count = ref('')
 const planoplan = ref('')
+const properties = ref<IApiFlatPropsListItem[]>([])
 
 let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
 
@@ -218,7 +225,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     ['avito_real_property', { ...aggregator, component: FlatAvito }],
     ['cian_real_property', { ...aggregator, component: FlatCian }],
     ['dom_click_real_property', { ...aggregator, component: FlatDomClick }],
-    ['yandex_real_property', { ...aggregator, component: FlatYandex }]
+    ['yandex_real_property', { ...aggregator, component: FlatYandex }],
+    ['m2_real_property', { ...aggregator, component: FlatM2 }]
   ])
   return result.get(aggregator.type)
 }
@@ -232,31 +240,16 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
     @pushCommonData="pushCommonData"
   >
     <FormLayout :apply="apply">
-      <div class="FlatEditorView">
+      <PskGridContainer grid-column-count="3">
         <DefaultFormFields v-model="default_fields" is_show_dates />
-
-        <div class="FlatEditorView__boxFields1 gridForm">
-          <PskInput v-model="name" style="grid-column: span 2" label="Название" disabled />
-          <PskInput v-model="status" label="Статус" disabled />
-
-          <PskInput
-            v-model="title_for_site"
-            style="grid-column: span 2"
-            label="Название для сайта"
-            placeholder="Введите название"
-          />
-        </div>
-
-        <div class="FlatEditorView__boxFields2 gridForm">
-          <h3 class="FlatEditorView__boxFields2H1">О квартире</h3>
-
+        <PskInput v-model="name" label="Название" disabled class="span-2" />
+        <PskInput v-model="status" label="Статус" disabled />
+        <PskInput v-model="title_for_site" label="Название для сайта" placeholder="Введите название" class="span-2" />
+        <PskGridContainer grid-column-count="3" grid-span="3" title="О квартире">
           <PskSwitch label="Является ли объект пентхаусом?" v-model="is_penthouse" />
-
           <div></div>
           <div></div>
-
           <PskInput v-model="article" label="Артикул" disabled />
-
           <PskInput v-model="plan_type" label="Тип планировки" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -267,7 +260,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="rooms" label="Кол-во комнат" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -278,7 +270,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="common_square" label="Площадь по декларации, м²" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -289,7 +280,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="custom_squares.marketing_square" label="Маркетинговая площадь, м²" type="number">
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -302,34 +292,11 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             </el-popover>
           </PskInput>
           <PskInput v-model="custom_squares.living_square" label="Жилая площадь, м²" type="number" />
-
           <PskWYSIWYGEditor label="Лигл к маркетинговой площади" v-model="legal_text" />
-
           <PskInput v-model="loggias_count" label="Количество лоджий" type="number" placeholder="Введите кол-во" />
           <PskInput v-model="balconies_count" label="Количество балконов" type="number" placeholder="Введите кол-во" />
-
-          <PskInput v-model="custom_squares.loggia_square" label="Площадь лоджии, м²" type="number">
-            <el-popover placement="top" trigger="hover" width="fit-content">
-              <template #reference>
-                <el-icon class="iconHover_default" style="font-size: 13px">
-                  <Warning />
-                </el-icon>
-              </template>
-              Забирается на все типы фидов
-            </el-popover>
-          </PskInput>
-
-          <PskInput v-model="terrace_square" label="Площадь террасы, м²" type="number">
-            <!--            <el-popover placement="top" trigger="hover" width="fit-content">-->
-            <!--              <template #reference>-->
-            <!--                <el-icon class="iconHover_default" style="font-size: 13px">-->
-            <!--                  <Warning />-->
-            <!--                </el-icon>-->
-            <!--              </template>-->
-            <!--              Забирается на все типы фидов-->
-            <!--            </el-popover>-->
-          </PskInput>
-
+          <PskInput v-model="custom_squares.loggia_square" label="Площадь лоджии, м²" type="number" />
+          <PskInput v-model="terrace_square" label="Площадь террасы, м²" type="number" />
           <PskInput v-model="custom_squares.kitchen_square" label="Площадь кухни, м²" type="number">
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -340,7 +307,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="ceiling_height" label="Высота потолка, м" type="number">
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -351,7 +317,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="floor" label="Этаж" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -362,7 +327,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="number_on_floor" label="Номер на этаже" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -373,7 +337,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskInput v-model="number" label="Номер квартиры" disabled>
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
@@ -384,7 +347,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается на все типы фидов
             </el-popover>
           </PskInput>
-
           <PskSelect
             v-model="interior"
             :options="refs.interior_types"
@@ -392,7 +354,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             placeholder="Выберите вид отделки"
             clearable
           />
-
           <PskSelect
             v-model="window_view"
             :options="refs.window_views"
@@ -400,7 +361,6 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             placeholder="Выберите вид из окна"
             clearable
           />
-
           <PskSelect
             v-model="window_placement"
             :options="refs.window_placements"
@@ -408,36 +368,40 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             placeholder="Выберите положение окон"
             clearable
           />
-
           <PskInput
             v-model="video_review"
             label="Видеообзор"
-            style="grid-column: span 3"
+            class="span-3"
             placeholder="Введите/вставьте ссылку"
           />
-
           <PskInput
             v-model="planoplan"
             label="Виджет планоплан"
-            style="grid-column: span 3"
+            class="span-3"
             placeholder="Вставьте ссылку на виджет"
-          />
-
-          <PskWYSIWYGEditor v-model="description" label="Описание" style="grid-column: span 3" />
-        </div>
-
+          >
+            <el-popover placement="top" trigger="hover" width="fit-content">
+              <template #reference>
+                <el-icon class="iconHover_default" style="font-size: 13px">
+                  <Warning />
+                </el-icon>
+              </template>
+              Несколько ссылок записывать через запятую.
+            </el-popover>
+          </PskInput>
+          <PskWYSIWYGEditor v-model="description" label="Описание" class="span-3" />
+        </PskGridContainer>
         <UploadImg class="FlatEditorView__UploadImg" v-model="images" :limit="10" />
 
         <ProfitDomPrices v-model="smart_prices" />
 
-        <div v-if="prices?.length" class="FlatEditorView__boxFields3 gridForm">
-          <h1 class="FlatEditorView__boxFields3H1">Цены 1C</h1>
+        <PskGridContainer v-if="prices?.length" grid-span="3" grid-column-count="3" title="Цены 1С">
           <PskInput
+            v-for="price_item of prices"
+            :key="price_item.price_type_uid"
             v-model="price_item.cost"
             :label="price_item.price_type + ', ₽'"
             disabled
-            v-for="price_item of prices"
-            :key="price_item.price_type_uid"
             type="cash"
           >
             <el-popover placement="top" trigger="hover" width="fit-content">
@@ -449,10 +413,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
               Забирается в зависимости от настроек
             </el-popover>
           </PskInput>
-        </div>
-
-        <div class="FlatEditorView__boxFields4 gridForm">
-          <h1 class="FlatEditorView__boxFields4H1">Прочее</h1>
+        </PskGridContainer>
+        <PskGridContainer grid-column-count="3" grid-span="3" title="Прочее">
           <PskSelect
             v-model="margin_group"
             :options="refs.margin_groups"
@@ -460,52 +422,23 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             options_value="value"
             label="Группа маржинальности"
           />
-
           <div></div>
           <div></div>
-
-          <div class="FlatEditorView__switchList">
+          <div class="ApartmentsEditorView__switchList">
             <PskSwitch v-model="subsidy" label="Субсидия" />
             <PskSwitch v-model="installment" label="Рассрочка" />
-            <PskSwitch v-model="renovation" label="Ремонт" />
-            <PskSwitch v-model="marginal" label="Маржинальная" />
-            <PskSwitch v-model="trade_in" label="Trade-in" />
-            <PskSwitch v-model="is_special" label="Особенный" />
           </div>
-        </div>
-      </div>
+          <PskSelect
+            class="span-2"
+            :options="refs.flat_properties"
+            v-model="properties"
+            options_label="label"
+            options_value="value"
+            multiple
+            label="Свойства квартир"
+          />
+        </PskGridContainer>
+      </PskGridContainer>
     </FormLayout>
   </AggregatorsLayout>
 </template>
-
-<style lang="scss">
-.FlatEditorView {
-  height: 100%;
-}
-
-.FlatEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.FlatEditorView__boxFields2H1,
-.FlatEditorView__boxFields3H1,
-.FlatEditorView__boxFields4H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.FlatEditorView__UploadImg {
-  margin: 30px 0 50px 0;
-}
-
-.FlatEditorView__switchList {
-  grid-column: span 3;
-
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-</style>

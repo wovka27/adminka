@@ -110,24 +110,18 @@ export default class RestApi {
 
   static parseQueryString(queryString: string): Record<string, any> {
     const params: Record<string, any> = {}
+    const searchParams = new URLSearchParams(queryString)
 
-    const regex = /([^&=]+)=([^&]*)/g
-    let match: RegExpExecArray | null
-
-    while ((match = regex.exec(queryString)) !== null) {
-      const key = decodeURIComponent(match[1])
-      const value = decodeURIComponent(match[2] || '')
-
-      const keys = key.replace(/\]/g, '').split('[')
+    for (const [key, value] of searchParams.entries()) {
       let obj = params
+      const keys = key.replace(/\]/g, '').split('[')
 
       for (let j = 0; j < keys.length; j++) {
         const currentKey = keys[j]
         const nextKey = keys[j + 1]
 
         if (nextKey === undefined || nextKey === '') {
-          const v = isNaN(+value) ? value : +value
-          obj[currentKey] = v
+          obj[currentKey] = isNaN(+value) ? value : +value
         } else if (nextKey.match(/^\d+$/)) {
           if (!Array.isArray(obj[currentKey])) {
             obj[currentKey] = []
@@ -156,11 +150,11 @@ export default class RestApi {
       const response_data = (await response.json()) as ResponseRefresh
       localStorage.setItem(`${this.key}_token`, response_data.payload.token)
       this.headers.Authorization = `Bearer ${response_data.payload.token}`
-      document.dispatchEvent(new CustomEvent(`tokenRefreshed_${this.key}`, { detail: { succes: true } })) //prettier-ignore
+      document.dispatchEvent(new CustomEvent(`tokenRefreshed_${this.key}`, { detail: { success: true } })) //prettier-ignore
       return true
     }
 
-    document.dispatchEvent(new CustomEvent(`tokenRefreshed_${this.key}`, { detail: { succes: false } })) //prettier-ignore
+    document.dispatchEvent(new CustomEvent(`tokenRefreshed_${this.key}`, { detail: { success: false } })) //prettier-ignore
     return false
   }
 
@@ -189,55 +183,38 @@ export default class RestApi {
       const url = `${url_api}${endpoint}${search_params ? `?${search_params}` : ''}`
       const response = await fetch(url, { signal: this.controller.signal, method, body: _body, headers })
 
-      const response_json = await response.json()
-
-      if (response.status === 401 && !this.is_refresh_running) {
-        this.is_refresh_running = true
-        const is_success = await this.refreshToken(options?.url_refresh ?? this.url_refresh)
-        this.is_refresh_running = false
-        if (is_success) {
-          //Стоит порезать options, чтобы дважды не срабатывал preFetch... (вставить функцию пустышку)
-          return this.useFetch(endpoint, method, options, params, body)
-        } else {
-          if (options?.cbHandlerErrorRefreshToken !== null) {
-            options?.cbHandlerErrorRefreshToken
-              ? options.cbHandlerErrorRefreshToken()
-              : this.cbHandlerErrorRefreshToken?.()
+      if (options?.onProgress && response.body) {
+        const contentLength = response.headers.get('content-length') || ''
+        const total = parseInt(contentLength, 10)
+        let v = 0
+        const onProgress = (chunk?: Uint8Array) => {
+          if (!chunk?.length) {
+            v = 0
+            return
           }
-
-          return null
+          v += chunk.length
+          options.onProgress?.(Math.round((v / total) * 100), response)
         }
-      } else if (response.status === 401) {
-        return new Promise((res) => {
-          document.addEventListener(
-            `tokenRefreshed_${this.key}`,
-            async (event: any) => {
-              if (event?.detail?.succes) {
-                //стоит порезать options, чтобы дважды не срабатывал preFetch... (вставить функцию пустышку)
-                const response = await this.useFetch<IResponseType>(endpoint, method, options, params, body)
-                res(response)
-              } else {
-                res(null)
-              }
-            },
-            { once: true }
-          )
+
+        const transformStream = new TransformStream({
+          transform(chunk, controller) {
+            onProgress(chunk)
+            controller.enqueue(chunk)
+          }
         })
-      } else if (response.status < 400) {
-        //сюда можно дописать вариант без распаковки ответа
-        if (response_json.meta) {
-          return response_json
-        } else {
-          return response_json.payload
-        }
-      } else {
-        if (options?.cbHandlerErrorResponse !== null) {
-          options?.cbHandlerErrorResponse
-            ? options?.cbHandlerErrorResponse(response_json)
-            : this.cbHandlerErrorResponse?.(response_json)
-        }
 
-        return null
+        response.body.pipeThrough(transformStream)
+
+        const newResponse = new Response(transformStream.readable, {
+          headers: response.headers,
+          status: response.status,
+          statusText: response.statusText
+        })
+
+        return this.handleResponse(newResponse, {}, options, endpoint, method, params, body)
+      } else {
+        const response_json = await response.json()
+        return this.handleResponse(response, response_json, options, endpoint, method, params, body)
       }
     } catch (error) {
       if (options?.cbHandlerErrorResponse !== null) {
@@ -245,7 +222,6 @@ export default class RestApi {
           ? options?.cbHandlerErrorResponse(error, this.controller)
           : this.cbHandlerErrorResponse?.(error, this.controller)
       }
-      // @ts-ignore
       if (error!.name == 'AbortError') {
         throw error
       }
@@ -255,6 +231,63 @@ export default class RestApi {
       if (options?.cbPostFetch !== null) {
         options?.cbPostFetch ? options.cbPostFetch() : this.cbPostFetch?.()
       }
+    }
+  }
+
+  private async handleResponse<IResponseType>(
+    response: Response,
+    response_json: any,
+    options: RestApiOverrideOptionsType | undefined,
+    endpoint: string,
+    method: RestMethodsType,
+    params: any,
+    body: any
+  ): Promise<IResponseType | null> {
+    if (response.status === 401 && !this.is_refresh_running) {
+      this.is_refresh_running = true
+      const is_success = await this.refreshToken(options?.url_refresh ?? this.url_refresh)
+      this.is_refresh_running = false
+      if (is_success) {
+        return this.useFetch(endpoint, method, options, params, body)
+      } else {
+        if (options?.cbHandlerErrorRefreshToken !== null) {
+          options?.cbHandlerErrorRefreshToken
+            ? options.cbHandlerErrorRefreshToken()
+            : this.cbHandlerErrorRefreshToken?.()
+        }
+        return null
+      }
+    } else if (response.status === 401) {
+      return new Promise((res) => {
+        document.addEventListener(
+          `tokenRefreshed_${this.key}`,
+          async (event: any) => {
+            if (event?.detail?.success) {
+              const response = await this.useFetch<IResponseType>(endpoint, method, options, params, body)
+              res(response)
+            } else {
+              res(null)
+            }
+          },
+          { once: true }
+        )
+      })
+    } else if (response.status < 400) {
+      if (options?.onProgress) {
+        return response
+      }
+      if (response_json.meta) {
+        return response_json
+      } else {
+        return response_json.payload
+      }
+    } else {
+      if (options?.cbHandlerErrorResponse !== null) {
+        options?.cbHandlerErrorResponse
+          ? options?.cbHandlerErrorResponse(response_json)
+          : this.cbHandlerErrorResponse?.(response_json)
+      }
+      return null
     }
   }
 
@@ -311,6 +344,7 @@ interface IRestApiOptions {
   cbPostFetch?: (() => void) | null
   cbHandlerErrorResponse?: ((errors?: any, controller?: AbortController) => void) | null
   cbHandlerErrorRefreshToken?: (() => void) | null
+  onProgress?: (percent: number, response: Response) => void // Новый колбэк onProgress
 }
 
 type RestApiOverrideOptionsType = Partial<Omit<IRestApiOptions, 'token'>> & {

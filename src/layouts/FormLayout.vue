@@ -7,7 +7,7 @@ defineProps<IFormLayoutProps>()
 </script>
 
 <template>
-  <form @submit.prevent="" class="FormLayout">
+  <form @submit.prevent="apply" class="FormLayout">
     <el-scrollbar>
       <div class="FormLayout__content">
         <slot ref="from" />
@@ -15,7 +15,7 @@ defineProps<IFormLayoutProps>()
     </el-scrollbar>
 
     <footer class="FormLayout__footer">
-      <PskButton @click="apply">Сохранить</PskButton>
+      <PskButton native_type="submit">Сохранить</PskButton>
     </footer>
   </form>
 </template>

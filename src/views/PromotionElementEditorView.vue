@@ -55,7 +55,7 @@ const { is_data_loaded, apply, default_fields } = useEditorView({
     tags.value = form_data.tags.filter(Boolean) || []
     availability_percent.value = getNumString(form_data.availability_percent)
     square.value = getNumString(form_data.square)
-    deadline.value = form_data.deadline || ''
+    ready_date.value = form_data.ready_date || ''
     mortgage_name.value = form_data.mortgage_name || ''
     mortgage_rate.value = getNumString(form_data.mortgage_rate)
     mortgage_term.value = getNumString(form_data.mortgage_term)
@@ -67,7 +67,7 @@ const { is_data_loaded, apply, default_fields } = useEditorView({
     text_tooltip.value = form_data.text_tooltip || ''
     description.value = form_data.description || ''
 
-    form.value = Object.entries(form_data.form).reduce(
+    form.value = Object.entries(form_data.form ?? getDefaultValuesFormFields()).reduce(
       (acc, [key, val]) => ({
         ...acc,
         [key]: val || form.value[key as keyof typeof form.value]
@@ -83,7 +83,7 @@ const { is_data_loaded, apply, default_fields } = useEditorView({
     tags: tags.value,
     availability_percent: availability_percent.value,
     square: square.value,
-    deadline: deadline.value,
+    ready_date: ready_date.value,
     mortgage_name: mortgage_name.value,
     mortgage_rate: mortgage_rate.value,
     mortgage_term: mortgage_term.value,
@@ -153,7 +153,7 @@ const prom_category_uid = ref('')
 const tags = ref<string[]>([])
 const availability_percent = ref('')
 const square = ref('')
-const deadline = ref('')
+const ready_date = ref('')
 const mortgage_name = ref('')
 const mortgage_rate = ref('')
 const mortgage_term = ref('')
@@ -169,90 +169,64 @@ const description = ref('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="PromotionElementEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
 
-      <div class="PromotionElementEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
+      <PskInput class="span-2" v-model="name" label="Название" required placeholder="Введите название" />
 
-        <PskInput v-model="anchor_link" required label="Якорная ссылка" placeholder="Введите якорную ссылку">
-          <el-popover placement="top" trigger="hover" width="fit-content">
-            <template #reference>
-              <el-icon class="iconHover_default" style="font-size: 13px">
-                <Warning />
-              </el-icon>
-            </template>
-            Конечный результат будет: якорная_ссылка(промо-категория)_якорная_ссылка(промо-объект)
-          </el-popover>
-        </PskInput>
+      <PskInput v-model="anchor_link" required label="Якорная ссылка" placeholder="Введите якорную ссылку">
+        <el-popover placement="top" trigger="hover" width="fit-content">
+          <template #reference>
+            <el-icon class="iconHover_default" style="font-size: 13px">
+              <Warning />
+            </el-icon>
+          </template>
+          Конечный результат будет: якорная_ссылка(промо-категория)_якорная_ссылка(промо-объект)
+        </el-popover>
+      </PskInput>
 
-        <PskCascader
-          style="grid-column: span 2"
-          v-model="prom_category_uid"
-          :options="refs.complexes_with_promotion_categories"
-          label="Категория"
-          required
-          placeholder="Выберите категорию"
-        />
+      <PskCascader
+        v-model="prom_category_uid"
+        :options="refs.complexes_with_promotion_categories"
+        label="Категория"
+        required
+        placeholder="Выберите категорию"
+        class="span-2"
+      />
 
-        <div></div>
-        <PskMultiString
-          style="grid-column: span 3"
-          v-model="tags"
-          btn_label="Добавить тэг"
-          label="Тэги"
-        ></PskMultiString>
+      <PskMultiString class="span-3" v-model="tags" btn_label="Добавить тэг" label="Тэги" />
 
-        <PskInput v-model="availability_percent" label="Процент доступности" placeholder="Введите значение" />
-        <PskInput v-model="square" label="Площадь" placeholder="Введите значение" />
-        <PskInput v-model="deadline" label="Срок сдачи" placeholder="Введите значение" />
-        <PskInput v-model="mortgage_name" label="Название ипотеки" placeholder="Введите название" />
-        <PskInput v-model="mortgage_rate" label="Ставка ипотеки" placeholder="Введите значение" />
-        <PskInput v-model="mortgage_term" label="Срок ипотеки" placeholder="Введите значение" />
-        <PskInput v-model="payment" label="Платеж" placeholder="Введите значение" />
-        <PskInput v-model="old_mortgage_rate" label="Старая ставка ипотеки" placeholder="Введите значение" />
-        <PskInput v-model="old_payment" label="Старый платеж" placeholder="Введите значение" />
-        <PskInput v-model="discount" label="Скидка" placeholder="Введите значение" />
-        <PskInput v-model="discount_text" label="Заголовок скидки" placeholder="Введите заголовок" />
-        <div></div>
-        <PskInput
-          style="grid-column: span 2"
-          v-model="text_tooltip"
-          type="textarea"
-          label="Описание для тултипа"
-          placeholder="Введите описание"
-        />
-        <div></div>
-        <PskWYSIWYGEditor style="grid-column: span 3" v-model="description" label="Описание" />
-        <div style="grid-column: span 2" class="gridForm">
-          <PskInput style="grid-column: span 3" v-model="form.button_label" label="Текст кнопки в карточке" />
-          <PskInput style="grid-column: span 3" v-model="form.header_text" label="Заголовок формы" />
-          <PskInput type="textarea" style="grid-column: span 3" v-model="form.content_text" label="Текст в форме" />
-          <PskInput style="grid-column: span 3" v-model="form.button_text" label="Текст кнопки в форме" />
-        </div>
-      </div>
+      <PskInput v-model="availability_percent" label="Процент доступности" placeholder="Введите значение" />
+      <PskInput v-model="square" label="Площадь" placeholder="Введите значение" />
+      <PskInput v-model="ready_date" label="Срок сдачи" placeholder="Введите значение" />
+      <PskInput v-model="mortgage_name" label="Название ипотеки" placeholder="Введите название" />
+      <PskInput v-model="mortgage_rate" label="Ставка ипотеки" placeholder="Введите значение" />
+      <PskInput v-model="mortgage_term" label="Срок ипотеки" placeholder="Введите значение" />
+      <PskInput v-model="payment" label="Платеж" placeholder="Введите значение" />
+      <PskInput v-model="old_mortgage_rate" label="Старая ставка ипотеки" placeholder="Введите значение" />
+      <PskInput v-model="old_payment" label="Старый платеж" placeholder="Введите значение" />
+      <PskInput v-model="discount" label="Скидка" placeholder="Введите значение" />
+      <PskInput v-model="discount_text" label="Заголовок скидки" placeholder="Введите заголовок" />
+      <PskInput
+        class="span-2"
+        v-model="text_tooltip"
+        type="textarea"
+        label="Описание для тултипа"
+        placeholder="Введите описание"
+      />
+      <PskWYSIWYGEditor v-model="description" label="Описание" />
 
-      <h1 class="PromotionElementEditorView__h1" v-if="$route.params.uid !== 'create'">Картинки</h1>
-      <UploadMedia v-model="materials" :types="material_type_options" :limit="10" />
-    </div>
+      <PskInput v-model="form.button_label" class="span-2" label="Текст кнопки в карточке" />
+      <div></div>
+      <PskInput v-model="form.header_text" class="span-2" label="Заголовок формы" />
+      <div></div>
+      <PskInput v-model="form.content_text" class="span-2" label="Текст в форме" type="textarea" />
+      <div></div>
+      <PskInput v-model="form.button_text" class="span-2" label="Текст кнопки в форме" />
+
+      <PskGridContainer grid-column-count="3" grid-span="3" title="Картинки">
+        <UploadMedia v-model="materials" :types="material_type_options" :limit="10" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.PromotionElementEditorView {
-  height: 100%;
-}
-
-.PromotionElementEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.PromotionElementEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.PromotionElementEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

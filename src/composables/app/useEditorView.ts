@@ -8,8 +8,8 @@ import useDefaultFields from '@/composables/app/useDefaultFields'
 
 import { message } from '@/utils/message'
 
+import excludeProp from '@/helpers/excludeProp'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
-import getRequestDataFromDeletedMedia from '@/helpers/getRequestDataFromDeletedMedia'
 
 interface IEditorViewProps {
   /**
@@ -212,24 +212,33 @@ export default (options: IEditorViewProps) => {
     options.mount?.common.fetch_list?.length
       ? [options.fetchGetEntity(entity_uid), ...options.mount.common.fetch_list]
       : [options.fetchGetEntity(entity_uid)]
+
   const getRequestData = () => ({
     ...options.getRequestData(),
     ...(options.default_fields && getRequestDefaultFields())
   })
+
   const setFormData = (form_data: any) => {
     options.default_fields && getDefaultFieldsData(form_data)
     options.setFormData(form_data)
   }
-  const pushCommonData = () => {
-    setFormData(getRequestDataBefore())
-  }
+  const pushCommonData = () => setFormData(getRequestDataBefore())
+
+  const setIsDataLoaded = (value: boolean) => (is_data_loaded.value = value)
+
   const getRequestDataBefore = () => JSON.parse(request_data_before)
-  const handleBack = () => void options.router.push(getHandleBackArgs(options.back_route_name))
+
+  const handleBack = () => options.router.push(getHandleBackArgs(options.back_route_name))
+
   const setRequestDataBefore = () => (request_data_before = JSON.stringify(getRequestData()))
-  const getIsStateBeforeEqualAfter = () => JSON.stringify(getRequestData()) === request_data_before
+
+  const getIsStateBeforeEqualAfter = () => {
+    // console.log(JSON.parse(JSON.stringify(getRequestData())), JSON.parse(request_data_before))
+    return JSON.stringify(getRequestData()) === request_data_before
+  }
 
   const apply = async () => {
-    const request_data = getRequestDataFromDeletedMedia({ ...getRequestData(), ...options.apply.request_data?.() })
+    const request_data = excludeProp('media', { ...getRequestData(), ...options.apply.request_data?.() })
 
     if (options.apply.create && route_params.uid === 'create') {
       if (options.apply.create.beforeResponseFn) {
@@ -246,7 +255,7 @@ export default (options: IEditorViewProps) => {
 
       app_state_store.getIsStateBeforeEqualAfter = null
       message(options.apply.create.success_message)
-      handleBack()
+      await handleBack()
       return
     }
 
@@ -272,7 +281,7 @@ export default (options: IEditorViewProps) => {
       await options.mount.create.fn?.() // Для выполнения дополнительной логики в данном блоке
 
       setRequestDataBefore()
-      is_data_loaded.value = true
+      setIsDataLoaded(true)
       return
     }
 
@@ -291,8 +300,9 @@ export default (options: IEditorViewProps) => {
 
     app_state_store.getIsStateBeforeEqualAfter = getIsStateBeforeEqualAfter
     setRequestDataBefore()
-    is_data_loaded.value = true
+    setIsDataLoaded(true)
   })
+
   return {
     is_data_loaded,
     default_fields,

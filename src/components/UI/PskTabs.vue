@@ -11,10 +11,7 @@ export interface IPskTabsProps {
 const props = defineProps<IPskTabsProps>()
 const emit = defineEmits(['update:modelValue'])
 
-const handleClickTabItem = (tab_item: ITab) => {
-  if (tab_item === props.modelValue) return
-  emit('update:modelValue', tab_item)
-}
+const handleClickTabItem = (tab_item: ITab) => tab_item !== props.modelValue && emit('update:modelValue', tab_item)
 </script>
 
 <template>

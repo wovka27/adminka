@@ -47,7 +47,7 @@ modal_confirm_store.callback = async (uid) => {
 
 <template>
   <div class="DynamicsView ListView">
-    <FilterComplex @complexSelectedChange="handleChangeFilter" />
+    <FilterComplex @selectedChange="handleChangeFilter" />
     <PskTable :data="data_list" v-model:meta="meta" @update:meta="setList" v-model:sort="sort">
       <el-table-column label="Категории" sortable prop="name" width="350px">
         <template #default="scope">

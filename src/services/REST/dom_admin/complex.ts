@@ -24,6 +24,10 @@ export const fetchGetComplexAggregatorAvito = async (uid: string): Promise<IComp
 export const fetchGetComplexAggregatorCian = async (uid: string): Promise<IComplexAggregatorItemCian | null> => {
   return fetchGetAggregator<IComplexAggregatorItemCian>(uid)
 }
+export const fetchGetComplexAggregatorM2 = async (uid: string): Promise<IComplexAggregatorItemM2 | null> => {
+  return fetchGetAggregator<IComplexAggregatorItemM2>(uid)
+}
+
 export const fetchGetComplexAggregatorDomClick = async (
   uid: string
 ): Promise<IComplexAggregatorItemDomClick | null> => {
@@ -38,6 +42,15 @@ export const fetchUpdateComplexAggregatorCian = async (
 ): Promise<IComplexAggregatorItemCian | null> => {
   return fetchUpdateAggregator<IComplexAggregatorItemCian>(uid, request_data)
 }
+
+export const fetchUpdateComplexAggregatorM2 = async (
+  uid: string,
+  request_data: IComplexAggregatorItemM2['data']
+): Promise<IComplexAggregatorItemM2 | null> => {
+  return fetchUpdateAggregator<IComplexAggregatorItemM2>(uid, request_data)
+}
+
+
 export const fetchUpdateComplexAggregatorAvito = async (
   uid: string,
   request_data: IComplexAggregatorItemAvito['data']
@@ -109,6 +122,7 @@ interface IComplexAggregatorItemCian extends IAggregatorItem {
   media: IMedia[]
   data: { complex_id: string }
 }
+interface IComplexAggregatorItemM2 extends IAggregatorItem, IComplexAggregatorItemCian {}
 
 interface IComplexAggregatorItemYandex extends IAggregatorItem {
   media: IMedia[]

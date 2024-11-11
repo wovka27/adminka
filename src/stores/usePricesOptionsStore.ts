@@ -31,7 +31,7 @@ export const usePricesOptionsStore = defineStore('prices', () => {
 
     price_type_options.value = [
       {
-        value: 'manual_type',
+        value: 'manual_price',
         label: 'Ввести вручную'
       },
       ...(<IPriceNestedOption[]>[price, smart_price].filter(Boolean))

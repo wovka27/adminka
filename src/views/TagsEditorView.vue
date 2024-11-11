@@ -79,73 +79,32 @@ const is_multiple = ref<boolean>(false)
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="TagsEditorView gridForm">
-      <div style="grid-column: span 2" class="gridForm">
+    <PskGridContainer grid-column-count="3">
+      <PskGridContainer grid-column-count="3" grid-span="2">
         <PskDate v-model="created_at" label="Дата создания" use_time disabled />
         <PskDate v-model="updated_at" label="Дата обновления" use_time disabled />
         <PskInput v-model="sort" label="Сортировка" type="number" required />
-      </div>
-      <div style="grid-column: span 3" class="TagsEditorView__boxFields1 gridForm">
-        <PskInput
-          style="grid-column: span 2"
-          v-model="title"
-          label="Название"
-          required
-          placeholder="Введите название"
-        />
-        <PskInput v-model="name" label="Обозначение" required placeholder="Введите название" />
-      </div>
+      </PskGridContainer>
 
-      <div style="grid-column: span 3" class="TagsEditorView__boxFields2">
-        <h3 style="grid-column: span 4" class="FlatEditorView__boxFields2H1">Параметры загрузки</h3>
+      <PskInput v-model="title" label="Название" required placeholder="Введите название" class="span-2" />
+      <PskInput v-model="name" label="Обозначение" required placeholder="Введите название" />
+
+      <PskGridContainer grid-span="3" grid-column-count="3" title="Параметры загрузки">
         <PskSwitch v-model="is_multiple" required label="Множественная загрузка" />
         <PskAlert
           v-if="is_multiple"
-          style="grid-column: span 3"
+          class="span-2"
           type="info"
           text="Для множественной загрузки изображений укажите в загрузчике ссылки через точку с запятой"
         />
-      </div>
+      </PskGridContainer>
 
-      <div style="grid-column: span 3" class="TagsEditorView__boxFields2">
-        <h3 style="grid-column: span 4" class="FlatEditorView__boxFields2H1">Параметры отображения</h3>
+      <PskGridContainer grid-span="3" grid-column-count="4" title="Параметры отображения">
         <PskSwitch v-model="show_chess" required label="Отображение в шахматке" />
         <PskSwitch v-model="show_present_mode" required label="Отображение в режиме презентации" />
         <PskSwitch v-model="show_offers" required label="Отображение в подборках" />
         <PskSwitch v-model="show_public" required label="Отображение в публичных сервисах" />
-      </div>
-    </div>
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.TagsEditorView {
-  height: 100%;
-}
-
-.TagsEditorView__boxFields1 {
-}
-
-.TagsEditorView__boxFields2 {
-  display: grid;
-  gap: 20px 30px;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: end;
-}
-
-.FlatEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.TagsEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.TagsEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

@@ -97,13 +97,12 @@ const link_video = ref('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="DynamicsEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
-
-      <div class="DynamicsEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
-      </div>
-      <div class="DynamicsEditorView__boxFields2 gridForm">
+      <PskGridContainer grid-span="3" grid-column-count="3">
+        <PskInput class="span-2" v-model="name" label="Название" required placeholder="Введите название" />
+      </PskGridContainer>
+      <PskGridContainer grid-span="2" grid-column-count="2">
         <PskSelect
           v-model="complex_uid"
           label="Жилой комплекс"
@@ -113,47 +112,11 @@ const link_video = ref('')
           :options="refs.complexes"
         />
         <PskDate v-model="publication_date" label="Дата публикации(в формате дата)" required />
-      </div>
-      <div class="DynamicsEditorView__boxFields2 gridForm">
-        <h3 class="FlatEditorView__boxFields2H1">Информация о динамике</h3>
-        <PskInput
-          style="grid-column: span 2"
-          v-model="link_video"
-          label="Ссылка на видео"
-          placeholder="Введите ссылку"
-        />
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+      </PskGridContainer>
+      <PskGridContainer title="Информация о динамике" grid-column-count="3" grid-span="3">
+        <PskInput class="span-2" v-model="link_video" label="Ссылка на видео" placeholder="Введите ссылку" />
+        <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.DynamicsEditorView {
-  height: 100%;
-}
-
-.DynamicsEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.DynamicsEditorView__boxFields2 {
-  margin-top: 20px;
-}
-
-.FlatEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.DynamicsEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.DynamicsEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

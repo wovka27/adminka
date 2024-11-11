@@ -60,25 +60,16 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
-      <PskAlert
-        style="grid-column: span 3"
-        type="info"
-        text="Данная информация будет использоваться для вывода на Авито"
-      />
+    <PskGridContainer grid-column-count="3" grid-span="3">
+      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Авито" />
       <PskInput v-model="house_id" label="ID ГП объекта" placeholder="Введите ID" type="number" />
       <PskSelect v-model="courtyard" label="Двор" :options="refs.avito_courtyard" multiple />
       <PskSelect v-model="parking" label="Парковка" :options="refs.avito_parking" multiple />
       <PskSelect v-model="passenger_elevator" label="Пассажирский лифт" :options="refs.avito_elevator" />
       <PskSelect v-model="freight_elevator" label="Грузовой лифт" :options="refs.avito_elevator" />
-      <div
-        v-if="material_type_options?.length"
-        style="grid-column: span 3"
-        class="ComplexEditorView__boxFields2 gridForm"
-      >
-        <h3 class="ComplexEditorView__boxFields2H1">Галерея</h3>
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+      <PskGridContainer v-if="material_type_options?.length" grid-span="3" grid-column-count="3" title="Галерея">
+        <UploadMedia class="span-3" v-model="materials" :types="material_type_options" />
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>

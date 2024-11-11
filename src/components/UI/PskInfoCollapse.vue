@@ -1,9 +1,9 @@
 <script setup lang="ts">
-defineProps<{ title: string; type?: 'error' | 'warning' }>()
+defineProps<{ title: string; type?: 'error' | 'warning'; marginBottom?: string }>()
 </script>
 
 <template>
-  <CollapseHOC class_name="PskInfoCollapse">
+  <CollapseHOC class_name="PskInfoCollapse" :style="{ 'margin-bottom': marginBottom ? marginBottom + 'px' : '30px' }">
     <template #header="{ is_open }">
       <p class="PskInfoCollapse__title" :class="type">{{ title }}</p>
       <svg
@@ -35,7 +35,7 @@ defineProps<{ title: string; type?: 'error' | 'warning' }>()
   border-width: 1px 0;
   border-style: solid;
   border-color: #dcdfe6;
-  margin-bottom: 30px;
+  // margin-bottom: 30px;
   transition: border 0.2s ease-in-out;
 
   svg path {

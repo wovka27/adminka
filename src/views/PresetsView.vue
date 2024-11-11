@@ -82,7 +82,7 @@ const boolValueForAlert = ref<boolean>(false)
 const createGroup = <T extends IPresetType | IPreset, K extends IPresetTypeSettingTemplate | IPresetSettingsItem>(
   key: 'settings' | 'settings_template'
 ) => {
-  const group = Object.groupBy((selected_type.value as T)[key], (i: K) => i.type)
+  const group = Object.groupBy((selected_type.value as T)[key as keyof T], (i: K) => i.type)
   for (const groupKey in group) {
     selected_type_settings_template_group[groupKey as keyof typeof selected_type_settings_template_group] =
       group[groupKey]

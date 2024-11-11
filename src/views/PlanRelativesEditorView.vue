@@ -87,61 +87,36 @@ const relatives = ref([])
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="PlanRelativesEditorView">
-      <div class="PlanRelativesEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
-        <PskSelect
-          style="grid-column: span 2"
-          v-model="feature_uid"
-          options_value="value"
-          options_label="label"
-          required
-          label="Особенности"
-          :options="refs.features"
-        />
-        <PskCascader
-          style="grid-column: span 2"
-          label="Родительская планировка"
-          required
-          v-model="plan_uid"
-          :options="refs.complexes_with_plans"
-        />
-        <PskCascader
-          style="grid-column: span 2"
-          label="Связанные планировки"
-          required
-          multiple
-          v-model="relatives"
-          :options="refs.complexes_with_plans"
-        />
-        <PskWYSIWYGEditor style="grid-column: span 3" v-model="description" label="Описание" />
-      </div>
-    </div>
+    <PskGridContainer grid-column-count="3">
+      <PskInput v-model="name" label="Название" required placeholder="Введите название" class="span-2" />
+      <div></div>
+      <PskSelect
+        v-model="feature_uid"
+        options_value="value"
+        options_label="label"
+        required
+        label="Особенности"
+        :options="refs.features"
+        class="span-2"
+      />
+      <div></div>
+      <PskCascader
+        label="Родительская планировка"
+        required
+        v-model="plan_uid"
+        :options="refs.complexes_with_plans"
+        class="span-2"
+      />
+      <div></div>
+      <PskCascader
+        label="Связанные планировки"
+        required
+        multiple
+        v-model="relatives"
+        :options="refs.complexes_with_plans"
+        class="span-2"
+      />
+      <PskWYSIWYGEditor v-model="description" label="Описание" />
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.PlanRelativesEditorView {
-  height: 100%;
-}
-
-.PlanRelativesEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.FlatEditorView__boxFields2H1 {
-  @include setFontStyle6();
-
-  margin: 50px 0 10px 0;
-  grid-column: span 3;
-}
-
-.PlanRelativesEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.PlanRelativesEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

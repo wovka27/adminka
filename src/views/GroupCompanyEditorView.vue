@@ -100,54 +100,24 @@ const foundation_year = ref('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="GroupCompanyEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
-
-      <div class="GroupCompanyEditorView__boxFields1 gridForm">
-        <PskInput
-          style="grid-column: span 2"
-          v-model="name"
-          label="Группа компаний"
-          required
-          placeholder="Введите название"
-        />
-        <PskInput
-          style="grid-column: span 2"
-          v-model="website_url"
-          label="Ссылка на сайт"
-          placeholder="Введите или вставьте ссылку"
-        />
-        <PskSelect
-          style="grid-column: span 2"
-          v-model="regions_activity"
-          :options="refs.activity_regions"
-          label="Регионы деятельности"
-          placeholder="Выберите регион"
-          multiple
-        />
-
-        <div></div>
-
-        <PskInput v-model="phone_number" label="Номер телефона" type="phone" placeholder="Введите номер" />
-        <PskInput v-model="foundation_year" label="Год основания" type="number" placeholder="Введите год" />
-
-        <UploadMedia style="grid-column: span 3" v-model="materials" :types="material_type_options" />
-      </div>
-    </div>
+      <PskInput v-model="name" label="Группа компаний" required placeholder="Введите название" class="span-2" />
+      <div></div>
+      <PskInput v-model="website_url" label="Ссылка на сайт" placeholder="Введите или вставьте ссылку" class="span-2" />
+      <div></div>
+      <PskSelect
+        v-model="regions_activity"
+        :options="refs.activity_regions"
+        label="Регионы деятельности"
+        placeholder="Выберите регион"
+        multiple
+        class="span-2"
+      />
+      <div></div>
+      <PskInput v-model="phone_number" label="Номер телефона" type="phone" placeholder="Введите номер" />
+      <PskInput v-model="foundation_year" label="Год основания" type="number" placeholder="Введите год" />
+      <UploadMedia v-model="materials" :types="material_type_options" />
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.GroupCompanyEditorView {
-  height: 100%;
-}
-
-.GroupCompanyEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.GroupCompanyEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>

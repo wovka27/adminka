@@ -29,13 +29,9 @@ defineExpose({ getIsStateBeforeEqualAfter })
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="gridForm">
-      <PskAlert
-        style="grid-column: span 3"
-        type="info"
-        text="Данная информация будет использоваться для вывода на Авито"
-      />
+    <PskGridContainer grid-span="3" grid-column-count="3">
+      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Авито" />
       <PskInput v-model="complex_id" label="ID ЖК из базы" placeholder="Введите ID ЖК" />
-    </div>
+    </PskGridContainer>
   </FormLayout>
 </template>

@@ -27,15 +27,14 @@ const { is_data_loaded, apply, default_fields } = useEditorView({
   default_fields: true,
   apply: {
     create: {
-      beforeResponseFn: async () => {
-        return checkForCompletionRequiredFields(
+      beforeResponseFn: async () =>
+        checkForCompletionRequiredFields(
           !name.value ||
             !complexes.value.length ||
             !conditions.value.length ||
             !slug.value ||
             !default_fields.value.weight
-        )
-      },
+        ),
       fetchCreateEntity: fetchCreateCompilation,
       success_message: 'Подборка успешно создана'
     },
@@ -93,13 +92,11 @@ const slug = ref<string>('')
 
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
-    <div class="CompilationEditorView">
+    <PskGridContainer grid-column-count="3">
       <DefaultFormFields v-model="default_fields" is_show_dates />
-
-      <div class="CompilationEditorView__boxFields1 gridForm">
-        <PskInput style="grid-column: span 2" v-model="name" label="Название" required placeholder="Введите название" />
+      <PskGridContainer grid-span="2" grid-column-count="1">
+        <PskInput v-model="name" label="Название" required placeholder="Введите название" />
         <PskSelect
-          style="grid-column: span 2"
           v-model="complexes"
           label="Жилой комплекс"
           options_label="label"
@@ -108,9 +105,9 @@ const slug = ref<string>('')
           multiple
           :options="refs.complexes"
         />
-        <div style="grid-column: span 2" class="gridForm">
+        <PskGridContainer grid-column-count="3" grid-span="1">
           <PskSelect
-            style="grid-column: span 2"
+            class="span-2"
             v-model="conditions"
             label="Условия"
             options_label="label"
@@ -120,27 +117,8 @@ const slug = ref<string>('')
             :options="refs.features"
           />
           <PskInput v-model="slug" label="Якорная ссылка" required placeholder="Введите название" />
-        </div>
-      </div>
-    </div>
+        </PskGridContainer>
+      </PskGridContainer>
+    </PskGridContainer>
   </FormLayout>
 </template>
-
-<style lang="scss">
-.CompilationEditorView {
-  height: 100%;
-}
-
-.CompilationEditorView__boxFields1 {
-  margin: 20px 0 0 0;
-}
-
-.CompilationEditorView__FormSite {
-  margin: 20px 0 0 0;
-}
-
-.CompilationEditorView__h1 {
-  @include setFontStyle6();
-  margin: 50px 0 30px 0;
-}
-</style>
