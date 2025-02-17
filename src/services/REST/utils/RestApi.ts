@@ -347,7 +347,7 @@ interface IRestApiOptions {
   onProgress?: (percent: number, response: Response) => void // Новый колбэк onProgress
 }
 
-type RestApiOverrideOptionsType = Partial<Omit<IRestApiOptions, 'token'>> & {
+export type RestApiOverrideOptionsType = Partial<Omit<IRestApiOptions, 'token'>> & {
   headers?: Record<string, string>
 }
 

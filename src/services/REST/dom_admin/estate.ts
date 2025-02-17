@@ -166,7 +166,7 @@ export interface IEstate {
 export interface IEstateGlobalSetting {
   name: string
   settings_type: 'PERSONAL' | 'GLOBAL'
-  type: 'avito' | 'cian' | 'dom_click' | 'yandex'
+  type: 'avito' | 'cian' | 'dom_click' | 'yandex' | 'm2'
   uid: string
 }
 

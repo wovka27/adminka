@@ -3,6 +3,7 @@ import PskAlert from '@/components/UI/PskAlert.vue'
 import PskButton from '@/components/UI/PskButton.vue'
 import PskCascader from '@/components/UI/PskCascader.vue'
 import PskCheckList from '@/components/UI/PskCheckList.vue'
+import type PskCopiedInput from '@/components/UI/PskCopiedInput.vue'
 import PskDate from '@/components/UI/PskDate.vue'
 import PskDrawer from '@/components/UI/PskDrawer.vue'
 import PskField from '@/components/UI/PskField.vue'
@@ -52,5 +53,6 @@ declare module '@vue/runtime-core' {
     PskInfoCollapse: typeof PskInfoCollapse
     PskTableTdName: typeof PskTableTdName
     PskGridContainer: typeof PskGridContainer
+    PskCopiedInput: typeof PskCopiedInput
   }
 }

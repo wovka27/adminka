@@ -17,7 +17,6 @@ export interface IUploadImgProps {
 const props = defineProps<IUploadImgProps>()
 const emit = defineEmits(['update:modelValue'])
 const modal_image_store = useModalImageStore()
-const app_state_store = useAppStateStore()
 
 const model = ref<IImage[]>([])
 

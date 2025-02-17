@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 
 import FormLayout from '@/layouts/FormLayout.vue'
 
+import FeedAggregatorAlertTitle from '@/components/FeedAggregatorAlertTitle.vue'
 import UnloadingParameters from '@/components/UnloadingParameters.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
@@ -37,7 +38,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateEstateAggregatorDomClick,
-      afterResponseFn: async () => {
+      beforeResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -74,8 +75,9 @@ defineExpose({ getIsStateBeforeEqualAfter })
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
     <PskGridContainer grid-column-count="3" grid-span="3">
-      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на ДомКлик" />
+      <FeedAggregatorAlertTitle type="dom_click" />
       <UnloadingParameters
+        aggregator_type="dom_click"
         v-model="unloading_parameters"
         :replacement_room_count_options="refs.dom_click_replacement_room_count"
       />

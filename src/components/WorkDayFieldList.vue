@@ -17,7 +17,7 @@ interface ISelectItem {
 }
 
 const time_ranges_list = Array.from({ length: (24 * 60) / 5 }, (_, i) =>
-  new Date(0, 0, 0, 0, i * 5).toLocaleTimeString(window.navigator.language, { hour: 'numeric', minute: 'numeric' })
+  new Date(0, 0, 0, 0, i * 5).toLocaleTimeString('default', { hour: 'numeric', minute: 'numeric' })
 )
 
 const work_days_list = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']

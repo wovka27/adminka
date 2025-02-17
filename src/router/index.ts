@@ -46,6 +46,8 @@ import PromotionCategoryEditorView from '@/views/PromotionCategoryEditorView.vue
 import PromotionCategoryView from '@/views/PromotionCategoryView.vue'
 import PromotionElementEditorView from '@/views/PromotionElementEditorView.vue'
 import PromotionElementListView from '@/views/PromotionElementListView.vue'
+import PublicApiEditorView from '@/views/PublicApiEditorView.vue'
+import PublicApiListView from '@/views/PublicApiListView.vue'
 import TagsEditorView from '@/views/TagsEditorView.vue'
 import TagsView from '@/views/TagsView.vue'
 
@@ -120,6 +122,10 @@ const router = createRouter({
 
     { path: '/flat_properties', component: FlatPropsListView, meta: { layout: 'default' }, name: 'flat_properties_list' },
     { path: '/flat_properties/:uid', component: FlatPropsEditorView, meta: { layout: 'default' }, name: 'flat_property' },
+
+    { path: '/public_api', component: PublicApiListView, meta: { layout: 'default' }, name: 'public_api_list' },
+    { path: '/public_api/:uid', component: PublicApiEditorView, meta: { layout: 'default' }, name: 'public_api' },
+
   ]
 })
 

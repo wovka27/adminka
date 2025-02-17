@@ -1,5 +1,5 @@
 export interface IAggregatorItem {
-  type: string
+  type: ResponseAggregatorKey
   label: string
   uid: string
 }

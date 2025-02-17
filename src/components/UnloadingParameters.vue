@@ -8,6 +8,7 @@ import useRefs from '@/composables/app/useRefs'
 interface IUnloadingParametersProps {
   replacement_room_count_options?: { value: string; label: string }[]
   replacement_room_count_type_field?: 'input'
+  aggregator_type: AggregatorItemType
   modelValue: {
     status: boolean
     force_load: boolean
@@ -31,9 +32,8 @@ const refs = useRefs('real-property-types', 'real-property-square-types')
 
 <template>
   <PskGridContainer grid-column-count="3" grid-span="3" title="Параметры выгрузки">
-    <GlobalSettingsInfoList aggregator_type="avito" />
+    <GlobalSettingsInfoList :aggregator_type="aggregator_type" />
     <div class="UnloadingParameters">
-      <!-- <div class="UnloadingParameters__switches"> -->
       <PskSwitch
         :model-value="modelValue.status"
         @update:modelValue="$emit('update:modelValue', { ...modelValue, status: $event })"
@@ -46,17 +46,7 @@ const refs = useRefs('real-property-types', 'real-property-square-types')
         @update:modelValue="$emit('update:modelValue', { ...modelValue, force_load: $event })"
         label="Принудительная выгрузка"
       />
-      <!-- </div> -->
 
-      <!-- <PskSelect
-        :model-value="modelValue.flat_type"
-        @update:modelValue="$emit('update:modelValue', { ...modelValue, flat_type: $event })"
-        label="В какой тип объекта недвижимости выгружать"
-        :options="refs.real_property_types"
-        options_label="label"
-        options_value="value"
-        required
-      /> -->
       <PskSelect
         style="max-width: 500px"
         v-if="!replacement_room_count_type_field && replacement_room_count_options"

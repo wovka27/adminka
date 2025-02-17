@@ -201,7 +201,7 @@ const handleSignType = (item: string) => {
         </div>
       </div>
 
-      <div class="span-3" class="FlatPropsEditorView__boxFields1 gridForm">
+      <div class="FlatPropsEditorView__boxFields1 gridForm span-3">
         <PskInput
           style="grid-column: span 2"
           v-model="title"
@@ -212,7 +212,7 @@ const handleSignType = (item: string) => {
         <PskInput v-model="public_title" label="Публичное название" required placeholder="Введите название" />
       </div>
 
-      <div class="span-3" class="FlatPropsEditorView__boxFields1 gridForm">
+      <div class="FlatPropsEditorView__boxFields1 gridForm">
         <PskInput v-model="code" label="Код" placeholder="Введите название">
           <el-popover placement="top" trigger="hover" width="fit-content">
             <template #reference>
@@ -225,7 +225,7 @@ const handleSignType = (item: string) => {
         </PskInput>
       </div>
 
-      <div class="span-3" class="FlatPropsEditorView__boxFields2 gridForm">
+      <div class="FlatPropsEditorView__boxFields2 gridForm span-3">
         <h2 class="FlatEditorView__boxFields2H1">Настройки показа в шахматке ProfitDom'a</h2>
         <PskInput v-model="view_mode" label="Режим показа" placeholder="Введите число" type="number" />
         <PskSelect
@@ -251,7 +251,7 @@ const handleSignType = (item: string) => {
         />
       </div>
 
-      <div class="span-3" class="FlatPropsEditorView__boxFields2 gridForm">
+      <div class="FlatPropsEditorView__boxFields2 gridForm span-3">
         <PskSwitch v-model="filterable" label="Отображать в фильтре ПД" />
         <PskSwitch v-model="is_chess_visible" label="Отображать на шахматке ПД" />
         <PskSwitch v-model="is_public" label="Показывать на публичных ресурсах" />

@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 
 import FormLayout from '@/layouts/FormLayout.vue'
 
+import FeedAggregatorAlertTitle from '@/components/FeedAggregatorAlertTitle.vue'
+
 import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadMaterials from '@/composables/app/useUploadMaterials'
@@ -28,7 +30,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateHouseAggregatorDomClick,
-      afterResponseFn: async () => {
+      beforeResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -75,7 +77,7 @@ defineExpose({ getIsStateBeforeEqualAfter })
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
     <PskGridContainer grid-column-count="3" grid-span="3">
-      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на ДомКлик" />
+      <FeedAggregatorAlertTitle type="dom_click" />
       <PskInput v-model="house_id" label="ID ГП объекта" placeholder="Введите ID" type="number" />
       <PskDate v-model="date_complete" label="Фактическая дата сдачи" />
       <div></div>

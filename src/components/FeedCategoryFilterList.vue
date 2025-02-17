@@ -1,20 +1,19 @@
 <script setup lang="ts">
-defineProps<{ modelValue: string }>()
-defineEmits(['update:modelValue'])
+const model = defineModel<AggregatorItemType | string>()
 
-const feed_category_list = ['cian', 'avito', 'yandex', 'dom_click', 'm2']
+const feed_category_list: AggregatorItemType[] = ['cian', 'avito', 'yandex', 'dom_click', 'm2', 'idalite', 'etagi']
 </script>
 
 <template>
-  <div class="FeedCategoryFilterList">
+  <div v-grab-scroll class="FeedCategoryFilterList">
     <div
-      v-for="item of feed_category_list"
-      :key="item"
+      v-for="feed of feed_category_list"
+      :key="feed"
       class="FeedCategoryFilterList__item"
-      :class="{ active: modelValue === item }"
-      @click="$emit('update:modelValue', item)"
+      :class="{ active: model === feed }"
+      @click="model = model === feed ? '' : feed"
     >
-      <img :src="`/icons/icon_${item}.svg`" :alt="item" />
+      <img :src="`/icons/icon_${feed}.svg`" :alt="feed" />
     </div>
   </div>
 </template>
@@ -24,13 +23,16 @@ const feed_category_list = ['cian', 'avito', 'yandex', 'dom_click', 'm2']
   display: flex;
   gap: 20px;
   margin-top: 10px;
-  margin-left: 10px;
+
+  min-height: 80px;
+  overflow-x: auto;
+  @include hideScroll();
 }
 
 .FeedCategoryFilterList__item {
   cursor: pointer;
   padding: 0 10px;
-  min-height: 76.47px;
+  height: 77px;
   display: flex;
   flex-shrink: 0;
   will-change: transition;

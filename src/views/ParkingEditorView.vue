@@ -3,13 +3,15 @@ import { Warning } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import AggregatorsLayout, { type IAggregatorsLayoutProps } from '@/layouts/AggregatorsLayout.vue'
+import AggregatorsLayout from '@/layouts/AggregatorsLayout.vue'
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
 import ParkingAvito from '@/components/Parking/ParkingAvito.vue'
 import ParkingCian from '@/components/Parking/ParkingCian.vue'
 import ParkingDomClick from '@/components/Parking/ParkingDomClick.vue'
+import ParkingEtagi from '@/components/Parking/ParkingEtagi.vue'
+import ParkingIdalite from '@/components/Parking/ParkingIdalite.vue'
 import ParkingM2 from '@/components/Parking/ParkingM2.vue'
 import ParkingYandex from '@/components/Parking/ParkingYandex.vue'
 import ProfitDomPrices from '@/components/ProfitDomPrices/ProfitDomPrices.vue'
@@ -18,7 +20,6 @@ import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadImages from '@/composables/app/useUploadImages'
 
-import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import {
   type IEstate,
   type IEstatePrice,
@@ -27,6 +28,7 @@ import {
   fetchUpdateEstate
 } from '@/services/REST/dom_admin/estate'
 
+import { AggregatorItem } from '@/helpers/AggregatorItem'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
 import getNumString from '@/helpers/getNumString'
 
@@ -46,7 +48,8 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
   apply: {
     request_data: getRequestImages,
     update: {
-      fetchUpdateEntity: fetchUpdateEstate
+      fetchUpdateEntity: fetchUpdateEstate,
+      afterResponseFn: async (response) => parking.getAggregatorsItems(response)
     }
   },
   setFormData: (form_data) => {
@@ -141,11 +144,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
           ]
         }
       },
-      fn: async ([response_flat]) => {
-        aggregators_items = response_flat.aggregators_items?.length
-          ? response_flat.aggregators_items.map(getAggregatorItem)
-          : []
-      }
+      fn: async ([response_parking]) => parking.getAggregatorsItems(response_parking)
     }
   }
 })
@@ -186,24 +185,21 @@ const marginal = ref(false)
 const trade_in = ref(false)
 const is_special = ref(false)
 
-let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
-
-const getAggregatorItem = (aggregator: IAggregatorItem) => {
-  const result = new Map([
-    ['avito_real_property', { ...aggregator, component: ParkingAvito }],
-    ['cian_real_property', { ...aggregator, component: ParkingCian }],
-    ['dom_click_real_property', { ...aggregator, component: ParkingDomClick }],
-    ['yandex_real_property', { ...aggregator, component: ParkingYandex }],
-    ['m2_real_property', { ...aggregator, component: ParkingM2 }]
-  ])
-  return result.get(aggregator.type)!
-}
+const parking = new AggregatorItem('parking', [
+  ParkingAvito,
+  ParkingCian,
+  ParkingDomClick,
+  ParkingYandex,
+  ParkingM2,
+  ParkingIdalite,
+  ParkingEtagi
+])
 </script>
 
 <template>
   <AggregatorsLayout
     v-if="is_data_loaded"
-    :aggregators="aggregators_items"
+    :aggregators="parking.aggregators_items"
     :getIsStateBeforeEqualAfter="getIsStateBeforeEqualAfter"
     @pushCommonData="pushCommonData"
   >

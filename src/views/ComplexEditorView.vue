@@ -5,12 +5,14 @@ import { useRouter } from 'vue-router'
 
 import { useFiltersStore } from '@/stores'
 
-import AggregatorsLayout, { type IAggregatorsLayoutProps } from '@/layouts/AggregatorsLayout.vue'
+import AggregatorsLayout from '@/layouts/AggregatorsLayout.vue'
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import ComplexAvito from '@/components/Complex/ComplexAvito.vue'
 import ComplexCian from '@/components/Complex/ComplexCian.vue'
 import ComplexDomClick from '@/components/Complex/ComplexDomClick.vue'
+import ComplexEtagi from '@/components/Complex/ComplexEtagi.vue'
+import ComplexIdalite from '@/components/Complex/ComplexIdalite.vue'
 import ComplexM2 from '@/components/Complex/ComplexM2.vue'
 import ComplexYandex from '@/components/Complex/ComplexYandex.vue'
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
@@ -19,9 +21,9 @@ import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadMaterials from '@/composables/app/useUploadMaterials'
 
-import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import { fetchGetComplex, fetchUpdateComplex } from '@/services/REST/dom_admin/complex'
 
+import { AggregatorItem } from '@/helpers/AggregatorItem'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
 import getNumString from '@/helpers/getNumString'
 
@@ -49,9 +51,7 @@ const { is_data_loaded, getIsStateBeforeEqualAfter, apply, pushCommonData, defau
       afterResponseFn: async (response_complex, request_data_before) => {
         if (response_complex.show !== request_data_before.show) await filters_store.setFiltersComplex()
 
-        aggregators_items = response_complex.aggregators_items
-          ? response_complex.aggregators_items.map(getAggregatorItem)
-          : []
+        complex.getAggregatorsItems(response_complex)
       }
     }
   },
@@ -101,11 +101,7 @@ const { is_data_loaded, getIsStateBeforeEqualAfter, apply, pushCommonData, defau
           }
         ]
       }),
-      fn: async ([response_complex]) => {
-        aggregators_items = response_complex.aggregators_items
-          ? response_complex.aggregators_items.map(getAggregatorItem)
-          : []
-      }
+      fn: async ([response_complex]) => complex.getAggregatorsItems(response_complex)
     }
   }
 })
@@ -124,24 +120,21 @@ const inhabitants = ref('')
 const description = ref('')
 const map_objects = ref<[number, number] | null>(null)
 
-let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
-
-const getAggregatorItem = (aggregator: IAggregatorItem) => {
-  const result = new Map([
-    ['avito_complex', { ...aggregator, component: ComplexAvito }],
-    ['cian_complex', { ...aggregator, component: ComplexCian }],
-    ['dom_click_complex', { ...aggregator, component: ComplexDomClick }],
-    ['yandex_complex', { ...aggregator, component: ComplexYandex }],
-    ['m2_complex', { ...aggregator, component: ComplexM2 }]
-  ])
-  return result.get(aggregator.type)!
-}
+const complex = new AggregatorItem('complex', [
+  ComplexAvito,
+  ComplexCian,
+  ComplexDomClick,
+  ComplexYandex,
+  ComplexM2,
+  ComplexIdalite,
+  ComplexEtagi
+])
 </script>
 
 <template>
   <AggregatorsLayout
     v-if="is_data_loaded"
-    :aggregators="aggregators_items"
+    :aggregators="complex.aggregators_items"
     :getIsStateBeforeEqualAfter="getIsStateBeforeEqualAfter"
     @pushCommonData="pushCommonData"
   >

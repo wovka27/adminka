@@ -17,6 +17,7 @@ export interface IPskCascaderProps {
   placeholder?: string
   disabled?: boolean
   required?: boolean
+  collapse_tags?: boolean
   multiple?: boolean
   clearable?: boolean
   handleRemoved?: (...arg: any) => any
@@ -48,6 +49,7 @@ const model = computed({
 
     <div class="PskCascader__main">
       <el-cascader
+        :collapse-tags="collapse_tags"
         class="PskCascader__el-select"
         :props="{
           expandTrigger: 'hover',

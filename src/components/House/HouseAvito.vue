@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 
 import FormLayout from '@/layouts/FormLayout.vue'
 
+import FeedAggregatorAlertTitle from '@/components/FeedAggregatorAlertTitle.vue'
+
 import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadMaterials from '@/composables/app/useUploadMaterials'
@@ -61,7 +63,7 @@ defineExpose({ getIsStateBeforeEqualAfter })
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
     <PskGridContainer grid-column-count="3" grid-span="3">
-      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Авито" />
+      <FeedAggregatorAlertTitle type="avito" />
       <PskInput v-model="house_id" label="ID ГП объекта" placeholder="Введите ID" type="number" />
       <PskSelect v-model="courtyard" label="Двор" :options="refs.avito_courtyard" multiple />
       <PskSelect v-model="parking" label="Парковка" :options="refs.avito_parking" multiple />

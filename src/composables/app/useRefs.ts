@@ -42,6 +42,8 @@ interface RefKeys {
   'complexes-with-plans': 'complexes_with_plans'
   'complexes-with-promotion-categories': 'complexes_with_promotion_categories'
   'complexes-with-houses': 'complexes_with_houses'
+  'api-resource-settings-types': 'api_resource_settings_types'
+  'public-scopes': 'public_scopes'
   'avito-balcony-types': 'avito_balcony_types'
   'avito-bathroom-types': 'avito_bathroom_types'
   'avito-categories': 'avito_categories'
@@ -100,6 +102,8 @@ interface RefKeys {
 }
 
 export interface InterRefKeysType {
+  api_resource_settings_types: IRefOption[]
+  public_scopes: string[]
   activity_regions: string[]
   avito_balcony_types: string[]
   avito_bathroom_types: string[]

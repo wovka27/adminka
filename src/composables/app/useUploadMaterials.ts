@@ -5,7 +5,7 @@ import { useAppStateStore } from '@/stores'
 import type { IMaterialType, IMedia } from '@/services/REST/dom_admin/common_types'
 import { fetchAttachMaterial, fetchDetachMaterial, fetchGetMaterialTypes } from '@/services/REST/dom_admin/materials'
 
-export default (entity: string) => {
+export default (entity: ResponseAggregatorKey) => {
   const materials: Ref<IMedia[]> = ref([])
   const material_type_options: Ref<IMaterialType[]> = ref([])
   const app_state_store = useAppStateStore()

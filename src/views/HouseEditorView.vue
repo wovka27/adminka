@@ -2,13 +2,15 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import AggregatorsLayout, { type IAggregatorsLayoutProps } from '@/layouts/AggregatorsLayout.vue'
+import AggregatorsLayout from '@/layouts/AggregatorsLayout.vue'
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
 import HouseAvito from '@/components/House/HouseAvito.vue'
 import HouseCian from '@/components/House/HouseCian.vue'
 import HouseDomClick from '@/components/House/HouseDomClick.vue'
+import HouseEtagi from '@/components/House/HouseEtagi.vue'
+import HouseIdalite from '@/components/House/HouseIdalite.vue'
 import HouseM2 from '@/components/House/HouseM2.vue'
 import HouseYandex from '@/components/House/HouseYandex.vue'
 
@@ -16,9 +18,9 @@ import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadMaterials from '@/composables/app/useUploadMaterials'
 
-import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import { fetchGetHouse, fetchUpdateHouse } from '@/services/REST/dom_admin/house'
 
+import { AggregatorItem } from '@/helpers/AggregatorItem'
 import convertDateToRequest from '@/helpers/convertDateToRequest'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
 import getNumString from '@/helpers/getNumString'
@@ -44,9 +46,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
         await detach(house_uid)
         await attach(house_uid)
       },
-      afterResponseFn: async (response) => {
-        aggregators_items = response.aggregators_items ? response.aggregators_items.map(getAggregatorItem) : []
-      }
+      afterResponseFn: async (response) => house.getAggregatorsItems(response)
     }
   },
   setFormData: (form_data) => {
@@ -101,11 +101,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
           { label: response_house.name }
         ]
       }),
-      fn: async ([response_house]) => {
-        aggregators_items = response_house.aggregators_items?.length
-          ? response_house.aggregators_items.map(getAggregatorItem)
-          : []
-      }
+      fn: async ([response_house]) => house.getAggregatorsItems(response_house)
     }
   }
 })
@@ -125,24 +121,21 @@ const actual_commissioning_at = ref()
 const keys_delivery_before = ref()
 const actual_keys_delivery_at = ref()
 
-let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
-
-const getAggregatorItem = (aggregator: IAggregatorItem) => {
-  const result = new Map([
-    ['avito_house', { ...aggregator, component: HouseAvito }],
-    ['cian_house', { ...aggregator, component: HouseCian }],
-    ['dom_click_house', { ...aggregator, component: HouseDomClick }],
-    ['yandex_house', { ...aggregator, component: HouseYandex }],
-    ['m2_house', { ...aggregator, component: HouseM2 }]
-  ])
-  return result.get(aggregator.type)!
-}
+const house = new AggregatorItem('house', [
+  HouseAvito,
+  HouseCian,
+  HouseDomClick,
+  HouseYandex,
+  HouseM2,
+  HouseIdalite,
+  HouseEtagi
+])
 </script>
 
 <template>
   <AggregatorsLayout
     v-if="is_data_loaded"
-    :aggregators="aggregators_items"
+    :aggregators="house.aggregators_items"
     :getIsStateBeforeEqualAfter="getIsStateBeforeEqualAfter"
     @pushCommonData="pushCommonData"
   >

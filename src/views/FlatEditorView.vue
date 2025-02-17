@@ -5,13 +5,15 @@ import { useRouter } from 'vue-router'
 
 import { useGlobalSettingsStore, usePricesOptionsStore } from '@/stores'
 
-import AggregatorsLayout, { type IAggregatorsLayoutProps } from '@/layouts/AggregatorsLayout.vue'
+import AggregatorsLayout from '@/layouts/AggregatorsLayout.vue'
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
 import FlatAvito from '@/components/Flat/FlatAvito.vue'
 import FlatCian from '@/components/Flat/FlatCian.vue'
 import FlatDomClick from '@/components/Flat/FlatDomClick.vue'
+import FlatEtagi from '@/components/Flat/FlatEtagi.vue'
+import FlatIdalite from '@/components/Flat/FlatIdalite.vue'
 import FlatM2 from '@/components/Flat/FlatM2.vue'
 import FlatYandex from '@/components/Flat/FlatYandex.vue'
 import ProfitDomPrices from '@/components/ProfitDomPrices/ProfitDomPrices.vue'
@@ -21,7 +23,6 @@ import useRefs from '@/composables/app/useRefs'
 import useUploadImages from '@/composables/app/useUploadImages'
 
 import type { IApiFlatPropsListItem } from '@/services/REST/dom_admin/api_flat_props'
-import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import {
   type IEstate,
   type IEstateGlobalSetting,
@@ -31,6 +32,7 @@ import {
   fetchUpdateEstate
 } from '@/services/REST/dom_admin/estate'
 
+import { AggregatorItem } from '@/helpers/AggregatorItem'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
 import getNumString from '@/helpers/getNumString'
 
@@ -52,9 +54,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
     request_data: getRequestImages,
     update: {
       fetchUpdateEntity: fetchUpdateEstate,
-      afterResponseFn: async (response) => {
-        aggregators_items = response.aggregators_items ? response.aggregators_items.map(getAggregatorItem) : []
-      }
+      afterResponseFn: async (response) => flat.getAggregatorsItems(response)
     }
   },
   setFormData: (form_data) => {
@@ -166,11 +166,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
           ]
         }
       },
-      fn: async ([response_flat]) => {
-        aggregators_items = response_flat.aggregators_items?.length
-          ? response_flat.aggregators_items.map(getAggregatorItem)
-          : []
-      }
+      fn: async ([response_flat]) => flat.getAggregatorsItems(response_flat)
     }
   }
 })
@@ -218,24 +214,13 @@ const balconies_count = ref('')
 const planoplan = ref('')
 const properties = ref<IApiFlatPropsListItem[]>([])
 
-let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
-
-const getAggregatorItem = (aggregator: IAggregatorItem) => {
-  const result = new Map([
-    ['avito_real_property', { ...aggregator, component: FlatAvito }],
-    ['cian_real_property', { ...aggregator, component: FlatCian }],
-    ['dom_click_real_property', { ...aggregator, component: FlatDomClick }],
-    ['yandex_real_property', { ...aggregator, component: FlatYandex }],
-    ['m2_real_property', { ...aggregator, component: FlatM2 }]
-  ])
-  return result.get(aggregator.type)
-}
+const flat = new AggregatorItem('flat', [FlatAvito, FlatCian, FlatDomClick, FlatYandex, FlatM2, FlatIdalite, FlatEtagi])
 </script>
 
 <template>
   <AggregatorsLayout
     v-if="is_data_loaded"
-    :aggregators="aggregators_items"
+    :aggregators="flat.aggregators_items"
     :getIsStateBeforeEqualAfter="getIsStateBeforeEqualAfter"
     @pushCommonData="pushCommonData"
   >
@@ -368,18 +353,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             placeholder="Выберите положение окон"
             clearable
           />
-          <PskInput
-            v-model="video_review"
-            label="Видеообзор"
-            class="span-3"
-            placeholder="Введите/вставьте ссылку"
-          />
-          <PskInput
-            v-model="planoplan"
-            label="Виджет планоплан"
-            class="span-3"
-            placeholder="Вставьте ссылку на виджет"
-          >
+          <PskInput v-model="video_review" label="Видеообзор" class="span-3" placeholder="Введите/вставьте ссылку" />
+          <PskInput v-model="planoplan" label="Виджет планоплан" class="span-3" placeholder="Вставьте ссылку на виджет">
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
                 <el-icon class="iconHover_default" style="font-size: 13px">

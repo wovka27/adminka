@@ -4,7 +4,7 @@ import { onMounted } from 'vue'
 import { useGlobalSettingsStore } from '@/stores/useGlobalSettingsStore'
 
 interface IGlobalSettingsInfoListProps {
-  aggregator_type: 'avito' | 'cian' | 'dom_click' | 'yandex'
+  aggregator_type: 'avito' | 'cian' | 'dom_click' | 'yandex' | 'm2'
 }
 
 const props = defineProps<IGlobalSettingsInfoListProps>()

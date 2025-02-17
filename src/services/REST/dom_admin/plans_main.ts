@@ -1,12 +1,21 @@
-import api from '@/services/REST/utils/dom_admin'
 import type { IImage } from '@/services/REST/dom_admin/common_types'
+import type { RestApiOverrideOptionsType } from '@/services/REST/utils/RestApi'
+import api from '@/services/REST/utils/dom_admin'
 
-export const fetchGetPlansMainList = async (meta: IMeta, f: Record<string, any>) => {
-  return await api.get<IUseMeta<IPlansMainListItem[]>>('admin/objects/plans', {
-    page: meta.page_current,
-    per_page: meta.page_per,
-    f
-  })
+export const fetchGetPlansMainList = async (
+  meta: IMeta,
+  f: Record<string, any>,
+  options?: RestApiOverrideOptionsType
+) => {
+  return await api.get<IUseMeta<IPlansMainListItem[]>>(
+    'admin/objects/plans',
+    {
+      page: meta.page_current,
+      per_page: meta.page_per,
+      f
+    },
+    options
+  )
 }
 
 export const fetchGetPlanMain = async (uid: string) => {

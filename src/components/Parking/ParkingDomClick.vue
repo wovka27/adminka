@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 
 import FormLayout from '@/layouts/FormLayout.vue'
 
+import FeedAggregatorAlertTitle from '@/components/FeedAggregatorAlertTitle.vue'
 import UnloadingParameters from '@/components/UnloadingParameters.vue'
 
 import useEditorView from '@/composables/app/useEditorView'
@@ -34,7 +35,7 @@ const { is_data_loaded, apply, getIsStateBeforeEqualAfter } = useEditorView({
   apply: {
     update: {
       fetchUpdateEntity: fetchUpdateEstateAggregatorDomClick,
-      afterResponseFn: async () => {
+      beforeResponseFn: async () => {
         const uid = router.currentRoute.value.params.aggregator_uid as string
 
         await detach(uid)
@@ -69,13 +70,8 @@ defineExpose({ getIsStateBeforeEqualAfter })
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
     <PskGridContainer grid-span="3" grid-column-count="3">
-      <PskAlert
-        class="span-3"
-        style="margin-top: 10px"
-        type="info"
-        text="Данная информация будет использоваться для вывода на Авито"
-      />
-      <UnloadingParameters v-model="unloading_parameters" />
+      <FeedAggregatorAlertTitle type="dom_click" />
+      <UnloadingParameters aggregator_type="dom_click" v-model="unloading_parameters" />
       <PskGridContainer grid-column-count="3" grid-span="3" title="Общая информация">
         <PskSelect v-model="bathroom" label="Санузел" :options="refs.dom_click_bathroom_types" />
         <PskSelect v-model="balcony" label="Наличие балкона" :options="refs.dom_click_balcony_types" />

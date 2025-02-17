@@ -5,12 +5,14 @@ import { useRouter } from 'vue-router'
 
 import { usePricesOptionsStore } from '@/stores'
 
-import AggregatorsLayout, { type IAggregatorsLayoutProps } from '@/layouts/AggregatorsLayout.vue'
+import AggregatorsLayout from '@/layouts/AggregatorsLayout.vue'
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import CommercialAvito from '@/components/Commercial/CommercialAvito.vue'
 import CommercialCian from '@/components/Commercial/CommercialCian.vue'
 import CommercialDomClick from '@/components/Commercial/CommercialDomClick.vue'
+import CommercialEtagi from '@/components/Commercial/CommercialEtagi.vue'
+import CommercialIdalite from '@/components/Commercial/CommercialIdalite.vue'
 import CommercialM2 from '@/components/Commercial/CommercialM2.vue'
 import CommercialYandex from '@/components/Commercial/CommercialYandex.vue'
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
@@ -20,7 +22,6 @@ import useEditorView from '@/composables/app/useEditorView'
 import useRefs from '@/composables/app/useRefs'
 import useUploadImages from '@/composables/app/useUploadImages'
 
-import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import {
   type IEstate,
   type IEstatePrice,
@@ -29,6 +30,7 @@ import {
   fetchUpdateEstate
 } from '@/services/REST/dom_admin/estate'
 
+import { AggregatorItem } from '@/helpers/AggregatorItem'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
 import getNumString from '@/helpers/getNumString'
 
@@ -45,9 +47,7 @@ const { is_data_loaded, apply, pushCommonData, getIsStateBeforeEqualAfter, defau
     request_data: getRequestImages,
     update: {
       fetchUpdateEntity: fetchUpdateEstate,
-      afterResponseFn: async (response) => {
-        aggregators_items = response.aggregators_items ? response.aggregators_items.map(getAggregatorItem) : []
-      }
+      afterResponseFn: async (response) => commercial.getAggregatorsItems(response)
     }
   },
   setFormData: (form_data) => {
@@ -134,11 +134,7 @@ const { is_data_loaded, apply, pushCommonData, getIsStateBeforeEqualAfter, defau
           }
         ]
       }),
-      fn: async ([response_commercial]) => {
-        aggregators_items = response_commercial.aggregators_items?.length
-          ? response_commercial.aggregators_items.map(getAggregatorItem)
-          : []
-      }
+      fn: async ([response_commercial]) => commercial.getAggregatorsItems(response_commercial)
     }
   }
 })
@@ -177,24 +173,21 @@ const marginal = ref(false)
 const trade_in = ref(false)
 const is_special = ref(false)
 
-let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
-
-const getAggregatorItem = (aggregator: IAggregatorItem) => {
-  const result = new Map([
-    ['avito_real_property', { ...aggregator, component: CommercialAvito }],
-    ['cian_real_property', { ...aggregator, component: CommercialCian }],
-    ['dom_click_real_property', { ...aggregator, component: CommercialDomClick }],
-    ['yandex_real_property', { ...aggregator, component: CommercialYandex }],
-    ['m2_real_property', { ...aggregator, component: CommercialM2 }]
-  ])
-  return result.get(aggregator.type)!
-}
+const commercial = new AggregatorItem('commercial', [
+  CommercialAvito,
+  CommercialCian,
+  CommercialDomClick,
+  CommercialYandex,
+  CommercialM2,
+  CommercialIdalite,
+  CommercialEtagi
+])
 </script>
 
 <template>
   <AggregatorsLayout
     v-if="is_data_loaded"
-    :aggregators="aggregators_items"
+    :aggregators="commercial.aggregators_items"
     :getIsStateBeforeEqualAfter="getIsStateBeforeEqualAfter"
     @pushCommonData="pushCommonData"
   >
@@ -296,12 +289,7 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             clearable
           />
 
-          <PskInput
-            v-model="video_review"
-            label="Видеообзор"
-            class="span-3"
-            placeholder="Введите/вставьте ссылку"
-          />
+          <PskInput v-model="video_review" label="Видеообзор" class="span-3" placeholder="Введите/вставьте ссылку" />
         </PskGridContainer>
 
         <UploadImg class="CommercialEditorView__UploadImg" v-model="images" :limit="10" />

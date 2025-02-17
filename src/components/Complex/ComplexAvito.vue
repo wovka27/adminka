@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 
 import FormLayout from '@/layouts/FormLayout.vue'
 
+import FeedAggregatorAlertTitle from '@/components/FeedAggregatorAlertTitle.vue'
+
 import useEditorView from '@/composables/app/useEditorView'
 
 import { fetchGetComplexAggregatorAvito, fetchUpdateComplexAggregatorAvito } from '@/services/REST/dom_admin/complex'
@@ -30,7 +32,7 @@ defineExpose({ getIsStateBeforeEqualAfter })
 <template>
   <FormLayout v-if="is_data_loaded" :apply="apply">
     <PskGridContainer grid-span="3" grid-column-count="3">
-      <PskAlert class="span-3" type="info" text="Данная информация будет использоваться для вывода на Авито" />
+      <FeedAggregatorAlertTitle type="avito" />
       <PskInput v-model="complex_id" label="ID ЖК из базы" placeholder="Введите ID ЖК" />
     </PskGridContainer>
   </FormLayout>

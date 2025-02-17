@@ -1,3 +1,4 @@
+import PskCopiedInput from '@/components/UI/PskCopiedInput.vue'
 import { Calendar } from '@element-plus/icons-vue'
 
 import CollapseHOC from '@/components/UI/CollapseHOC.vue'
@@ -131,5 +132,9 @@ export default [
   {
     name: 'PskAlert',
     component: PskAlert
+  },
+  {
+    name: 'PskCopiedInput',
+    component: PskCopiedInput
   }
 ]

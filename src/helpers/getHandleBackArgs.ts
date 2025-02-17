@@ -1,8 +1,4 @@
-export default (name: string) => ({
+export default (name: string, back = history.state.back) => ({
   name,
-  ...(history.state.back && {
-    query: Object.fromEntries(
-      new URLSearchParams(new URL(window.location.origin + history.state.back).search).entries()
-    )
-  })
+  ...(back && { query: Object.fromEntries(new URL(window.location.origin + back).searchParams.entries()) })
 })

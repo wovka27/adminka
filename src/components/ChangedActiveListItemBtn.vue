@@ -1,23 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
 import api from '@/services/REST/utils/dom_admin'
 
 import getRoute from '@/helpers/getDocsLinkFromAsideMenuByPath'
 
 interface IChangedListItemBtnProps {
-  modelValue: boolean
   uid: string
 }
 
 const props = defineProps<IChangedListItemBtnProps>()
-const emits = defineEmits(['update:modelValue'])
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => {
-    emits('update:modelValue', value)
-  }
-})
+const model = defineModel()
 
 const changeActive = (path: string) => async () => {
   const url = `admin/${getRoute(path, 'route')}/${props.uid}/toggle-show`

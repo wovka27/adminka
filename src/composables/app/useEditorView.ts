@@ -232,10 +232,7 @@ export default (options: IEditorViewProps) => {
 
   const setRequestDataBefore = () => (request_data_before = JSON.stringify(getRequestData()))
 
-  const getIsStateBeforeEqualAfter = () => {
-    // console.log(JSON.parse(JSON.stringify(getRequestData())), JSON.parse(request_data_before))
-    return JSON.stringify(getRequestData()) === request_data_before
-  }
+  const getIsStateBeforeEqualAfter = () => JSON.stringify(getRequestData()) === request_data_before
 
   const apply = async () => {
     const request_data = excludeProp('media', { ...getRequestData(), ...options.apply.request_data?.() })

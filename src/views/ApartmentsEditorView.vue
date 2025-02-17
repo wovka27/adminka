@@ -5,12 +5,14 @@ import { useRouter } from 'vue-router'
 
 import { useGlobalSettingsStore, usePricesOptionsStore } from '@/stores'
 
-import AggregatorsLayout, { type IAggregatorsLayoutProps } from '@/layouts/AggregatorsLayout.vue'
+import AggregatorsLayout from '@/layouts/AggregatorsLayout.vue'
 import FormLayout from '@/layouts/FormLayout.vue'
 
 import ApartmentAvito from '@/components/Apartment/ApartmentAvito.vue'
 import ApartmentCian from '@/components/Apartment/ApartmentCian.vue'
 import ApartmentDomClick from '@/components/Apartment/ApartmentDomClick.vue'
+import ApartmentEtagi from '@/components/Apartment/ApartmentEtagi.vue'
+import ApartmentIdalite from '@/components/Apartment/ApartmentIdalite.vue'
 import ApartmentM2 from '@/components/Apartment/ApartmentM2.vue'
 import ApartmentYandex from '@/components/Apartment/ApartmentYandex.vue'
 import DefaultFormFields from '@/components/DefaultFormFields.vue'
@@ -21,7 +23,6 @@ import useRefs from '@/composables/app/useRefs'
 import useUploadImages from '@/composables/app/useUploadImages'
 
 import type { IApiFlatPropsListItem } from '@/services/REST/dom_admin/api_flat_props'
-import type { IAggregatorItem } from '@/services/REST/dom_admin/common_types'
 import {
   type IEstate,
   type IEstateGlobalSetting,
@@ -31,6 +32,7 @@ import {
   fetchUpdateEstate
 } from '@/services/REST/dom_admin/estate'
 
+import { AggregatorItem } from '@/helpers/AggregatorItem'
 import getHandleBackArgs from '@/helpers/getHandleBackArgs'
 import getNumString from '@/helpers/getNumString'
 
@@ -52,9 +54,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
     request_data: getRequestImages,
     update: {
       fetchUpdateEntity: fetchUpdateEstate,
-      afterResponseFn: async (response) => {
-        aggregators_items = response.aggregators_items?.map(getAggregatorItem) ?? []
-      }
+      afterResponseFn: async (response) => apartments.getAggregatorsItems(response)
     }
   },
   setFormData: (form_data) => {
@@ -99,8 +99,9 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
     loggias_count.value = form_data.loggias_count || ''
     balconies_count.value = form_data.balconies_count || ''
     planoplan.value = form_data.planoplan || ''
-    properties.value = (form_data.properties ?? []).map((i: IApiFlatPropsListItem) => i.uid)
-
+    properties.value = (form_data.properties ?? []).map((i: IApiFlatPropsListItem | string) =>
+      typeof i === 'string' ? i : i.uid
+    )
     global_settings.value = form_data.global_settings
 
     getImages(form_data.images)
@@ -164,11 +165,7 @@ const { apply, is_data_loaded, getIsStateBeforeEqualAfter, pushCommonData, defau
           ]
         }
       },
-      fn: async ([response_apartment]) => {
-        aggregators_items = response_apartment.aggregators_items?.length
-          ? response_apartment.aggregators_items.map(getAggregatorItem)
-          : []
-      }
+      fn: async ([response_apartment]) => apartments.getAggregatorsItems(response_apartment)
     }
   }
 })
@@ -216,24 +213,21 @@ const balconies_count = ref('')
 const planoplan = ref('')
 const properties = ref<IApiFlatPropsListItem[]>([])
 
-let aggregators_items: IAggregatorsLayoutProps['aggregators'] = []
-
-const getAggregatorItem = (aggregator: IAggregatorItem) => {
-  const result = new Map([
-    ['avito_real_property', { ...aggregator, component: ApartmentAvito }],
-    ['cian_real_property', { ...aggregator, component: ApartmentCian }],
-    ['dom_click_real_property', { ...aggregator, component: ApartmentDomClick }],
-    ['yandex_real_property', { ...aggregator, component: ApartmentYandex }],
-    ['m2_real_property', { ...aggregator, component: ApartmentM2 }]
-  ])
-  return result.get(aggregator.type)
-}
+const apartments = new AggregatorItem('apartment', [
+  ApartmentAvito,
+  ApartmentCian,
+  ApartmentDomClick,
+  ApartmentYandex,
+  ApartmentM2,
+  ApartmentIdalite,
+  ApartmentEtagi
+])
 </script>
 
 <template>
   <AggregatorsLayout
     v-if="is_data_loaded"
-    :aggregators="aggregators_items"
+    :aggregators="apartments.aggregators_items"
     :getIsStateBeforeEqualAfter="getIsStateBeforeEqualAfter"
     @pushCommonData="pushCommonData"
   >
@@ -368,18 +362,8 @@ const getAggregatorItem = (aggregator: IAggregatorItem) => {
             placeholder="Выберите положение окон"
             clearable
           />
-          <PskInput
-            v-model="video_review"
-            label="Видеообзор"
-            class="span-3"
-            placeholder="Введите/вставьте ссылку"
-          />
-          <PskInput
-            v-model="planoplan"
-            label="Виджет планоплан"
-            class="span-3"
-            placeholder="Вставьте ссылку на виджет"
-          >
+          <PskInput v-model="video_review" label="Видеообзор" class="span-3" placeholder="Введите/вставьте ссылку" />
+          <PskInput v-model="planoplan" label="Виджет планоплан" class="span-3" placeholder="Вставьте ссылку на виджет">
             <el-popover placement="top" trigger="hover" width="fit-content">
               <template #reference>
                 <el-icon class="iconHover_default" style="font-size: 13px">

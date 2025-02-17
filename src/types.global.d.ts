@@ -1,7 +1,7 @@
 /**
  @description строка "create" откроект редактор в режиме создания,
-    строка с uid сущности откроет редактор в режиме редактирования этой сущности,
-    пустая строка - уничтожит редактор
+  строка с uid сущности откроет редактор в режиме редактирования этой сущности,
+  пустая строка - уничтожит редактор
 
  */
 declare type ModeEditorType = string
@@ -11,6 +11,11 @@ declare global {
     groupBy<T>(list: T[], keyGetter: (item: T) => any): { [key: string]: T[] }
   }
 }
+
+declare type AggregatorItemType = 'avito' | 'cian' | 'dom_click' | 'yandex' | 'm2' | 'idalite' | 'etagi'
+declare type EntityForAggregatorType = 'real_property' | 'house' | 'complex'
+declare type ResponseAggregatorKey = `${AggregatorItemType}_${EntityForAggregatorType}`
+declare type EntityName = 'apartment' | 'commercial' | 'complex' | 'flat' | 'house' | 'pantry' | 'parking'
 
 declare interface IMeta {
   page_per: number
